@@ -1,0 +1,10 @@
+[
+  { "id": 1, "name": "Oromia Cultural T-Shirt", "description": "Traditional Oromo design cotton t-shirt", "price": 450.0, "image_url": "https://picsum.photos/seed/shop1/400/400", "category": "Clothing", "stock": 25 },
+  { "id": 2, "name": "Kallacha Oromia Book Set", "description": "Complete yearly book collection 2020-2025", "price": 1200.0, "image_url": "https://picsum.photos/seed/shop2/400/400", "category": "Books", "stock": 15 },
+  { "id": 3, "name": "Oromo Coffee Beans (1kg)", "description": "Premium roasted Oromo coffee beans", "price": 380.0, "image_url": "https://picsum.photos/seed/shop3/400/400", "category": "Food", "stock": 50 },
+  { "id": 4, "name": "Traditional Oromo Basket", "description": "Handwoven traditional Oromo basket", "price": 650.0, "image_url": "https://picsum.photos/seed/shop4/400/400", "category": "Handicraft", "stock": 12 },
+  { "id": 5, "name": "Oromia Map Poster", "description": "High-quality printed Oromia region map", "price": 220.0, "image_url": "https://picsum.photos/seed/shop5/400/400", "category": "Decor", "stock": 30 },
+  { "id": 6, "name": "Oromo Music CD Collection", "description": "Traditional Oromo music collection", "price": 550.0, "image_url": "https://picsum.photos/seed/shop6/400/400", "category": "Music", "stock": 20 },
+  { "id": 7, "name": "Oromia Travel Guide Book", "description": "Complete travel guide to Oromia region", "price": 480.0, "image_url": "https://picsum.photos/seed/shop7/400/400", "category": "Books", "stock": 18 },
+  { "id": 8, "name": "Oromo Traditional Scarf", "description": "Colorful traditional Oromo scarf", "price": 320.0, "image_url": "https://picsum.photos/seed/shop8/400/400", "category": "Clothing", "stock": 22 }
+]

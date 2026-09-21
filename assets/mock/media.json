@@ -1,0 +1,37 @@
+{
+  "press-release": [
+    { "id": 1, "title": "Oromia Government Announces New Development Initiative", "description": "A comprehensive development initiative for regional growth.", "type": "press-release", "published_at": "2026-09-18T10:00:00" },
+    { "id": 2, "title": "Health Sector Reform Program Launched", "description": "Reforming healthcare access across the region.", "type": "press-release", "published_at": "2026-09-15T14:00:00" },
+    { "id": 3, "title": "Education Infrastructure Plan Approved", "description": "Building 50 new schools across Oromia.", "type": "press-release", "published_at": "2026-09-12T09:00:00" },
+    { "id": 4, "title": "Agricultural Innovation Program", "description": "Support for smallholder farmers.", "type": "press-release", "published_at": "2026-09-09T11:00:00" },
+    { "id": 5, "title": "Water Resource Management Strategy", "description": "Sustainable water management for the region.", "type": "press-release", "published_at": "2026-09-06T15:00:00" }
+  ],
+  "documentary": [
+    { "id": 1, "title": "The Oromo Heritage", "description": "Exploring the rich cultural heritage of the Oromo people.", "thumbnail_url": "https://picsum.photos/seed/doc1/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "documentary", "published_at": "2026-09-18T10:00:00", "duration": 300 },
+    { "id": 2, "title": "Journey Through Oromia", "description": "A journey through diverse landscapes and cultures.", "thumbnail_url": "https://picsum.photos/seed/doc2/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "documentary", "published_at": "2026-09-15T14:00:00", "duration": 450 },
+    { "id": 3, "title": "Traditional Music and Dance", "description": "Exploring traditional music and dance forms.", "thumbnail_url": "https://picsum.photos/seed/doc3/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "documentary", "published_at": "2026-09-12T09:00:00", "duration": 240 },
+    { "id": 4, "title": "Oromia's Natural Wonders", "description": "Natural beauty and wildlife of Oromia.", "thumbnail_url": "https://picsum.photos/seed/doc4/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "documentary", "published_at": "2026-09-09T11:00:00", "duration": 380 },
+    { "id": 5, "title": "Modern Oromia", "description": "The modern face of the Oromia region.", "thumbnail_url": "https://picsum.photos/seed/doc5/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "documentary", "published_at": "2026-09-06T15:00:00", "duration": 320 }
+  ],
+  "video": [
+    { "id": 1, "title": "Oromo Culture Festival 2026", "thumbnail_url": "https://picsum.photos/seed/vid1/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "video", "published_at": "2026-09-18T10:00:00", "duration": 180 },
+    { "id": 2, "title": "Community Development Project", "thumbnail_url": "https://picsum.photos/seed/vid2/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "video", "published_at": "2026-09-15T14:00:00", "duration": 220 },
+    { "id": 3, "title": "Young Innovators Showcase", "thumbnail_url": "https://picsum.photos/seed/vid3/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "video", "published_at": "2026-09-12T09:00:00", "duration": 150 },
+    { "id": 4, "title": "Environmental Conservation", "thumbnail_url": "https://picsum.photos/seed/vid4/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "video", "published_at": "2026-09-09T11:00:00", "duration": 200 },
+    { "id": 5, "title": "Public Health Campaign", "thumbnail_url": "https://picsum.photos/seed/vid5/600/400", "media_url": "https://www.w3schools.com/html/mov_bbb.mp4", "type": "video", "published_at": "2026-09-06T15:00:00", "duration": 175 }
+  ],
+  "image-gallery": [
+    { "id": 1, "title": "Oromo Cultural Heritage Exhibition", "thumbnail_url": "https://picsum.photos/seed/gal1/600/600", "type": "image-gallery", "published_at": "2026-09-18T10:00:00", "image_urls": ["https://picsum.photos/seed/gal1_1/800/600","https://picsum.photos/seed/gal1_2/800/600","https://picsum.photos/seed/gal1_3/800/600","https://picsum.photos/seed/gal1_4/800/600"] },
+    { "id": 2, "title": "Annual Community Festival", "thumbnail_url": "https://picsum.photos/seed/gal2/600/600", "type": "image-gallery", "published_at": "2026-09-15T14:00:00", "image_urls": ["https://picsum.photos/seed/gal2_1/800/600","https://picsum.photos/seed/gal2_2/800/600","https://picsum.photos/seed/gal2_3/800/600"] },
+    { "id": 3, "title": "Development Projects Showcase", "thumbnail_url": "https://picsum.photos/seed/gal3/600/600", "type": "image-gallery", "published_at": "2026-09-12T09:00:00", "image_urls": ["https://picsum.photos/seed/gal3_1/800/600","https://picsum.photos/seed/gal3_2/800/600","https://picsum.photos/seed/gal3_3/800/600","https://picsum.photos/seed/gal3_4/800/600","https://picsum.photos/seed/gal3_5/800/600"] },
+    { "id": 4, "title": "Nature and Wildlife", "thumbnail_url": "https://picsum.photos/seed/gal4/600/600", "type": "image-gallery", "published_at": "2026-09-09T11:00:00", "image_urls": ["https://picsum.photos/seed/gal4_1/800/600","https://picsum.photos/seed/gal4_2/800/600","https://picsum.photos/seed/gal4_3/800/600"] },
+    { "id": 5, "title": "Urban Development", "thumbnail_url": "https://picsum.photos/seed/gal5/600/600", "type": "image-gallery", "published_at": "2026-09-06T15:00:00", "image_urls": ["https://picsum.photos/seed/gal5_1/800/600","https://picsum.photos/seed/gal5_2/800/600"] }
+  ],
+  "audio-files": [
+    { "id": 1, "title": "Oromo Traditional Music", "type": "audio-files", "published_at": "2026-09-18T10:00:00", "duration": 245, "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+    { "id": 2, "title": "Community Radio Interview", "type": "audio-files", "published_at": "2026-09-15T14:00:00", "duration": 180, "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+    { "id": 3, "title": "Oromo Poetry Reading", "type": "audio-files", "published_at": "2026-09-12T09:00:00", "duration": 320, "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+    { "id": 4, "title": "Cultural Heritage Discussion", "type": "audio-files", "published_at": "2026-09-09T11:00:00", "duration": 540, "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+    { "id": 5, "title": "Youth Voices Podcast", "type": "audio-files", "published_at": "2026-09-06T15:00:00", "duration": 425, "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" }
+  ]
+}

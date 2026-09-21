@@ -1,0 +1,8 @@
+[
+  { "id": 1, "title": "Construction of Regional Office Building", "description": "Supply and construction of a new 3-story regional office building in Adama.", "deadline": "2026-10-15T23:59:59" },
+  { "id": 2, "title": "Supply of IT Equipment", "description": "Supply of 100 laptops and 50 desktop computers for regional offices.", "deadline": "2026-10-20T23:59:59" },
+  { "id": 3, "title": "Road Rehabilitation Project", "description": "Rehabilitation of 25 km of rural roads in Arsi Zone.", "deadline": "2026-11-01T23:59:59" },
+  { "id": 4, "title": "Medical Supplies Procurement", "description": "Supply of medical equipment and supplies for regional health centers.", "deadline": "2026-10-30T23:59:59" },
+  { "id": 5, "title": "Water Infrastructure Development", "description": "Construction of water supply systems in 5 rural woredas.", "deadline": "2026-11-10T23:59:59" },
+  { "id": 6, "title": "Agricultural Equipment Supply", "description": "Supply of modern agricultural equipment to farmer cooperatives.", "deadline": "2026-10-25T23:59:59" }
+]

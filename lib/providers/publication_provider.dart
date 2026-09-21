@@ -1,0 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../models/publication.dart';
+import '../repositories/publication_repository.dart';
+
+final publicationRepositoryProvider = Provider<PublicationRepository>((ref) {
+  return PublicationRepository();
+});
+
+final publicationListProvider =
+    FutureProvider.family<List<Publication>, String>((ref, slug) async {
+  return ref.watch(publicationRepositoryProvider).getByType(slug);
+});

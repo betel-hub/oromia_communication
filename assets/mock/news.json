@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "title": "Oromia Communication Bureau Launches New Digital Platform",
+    "content": "The Oromia Communication Bureau has officially launched a new digital platform aimed at improving communication between the government and citizens across the region.",
+    "excerpt": "A new digital platform to enhance government-citizen communication.",
+    "image_url": "https://picsum.photos/seed/news1/800/400",
+    "category_name": "Technology",
+    "category_slug": "technology",
+    "published_at": "2026-09-18T10:00:00",
+    "view_count": 245,
+    "is_featured": true
+  },
+  {
+    "id": 2,
+    "title": "Regional Development Projects Show Strong Progress",
+    "content": "Multiple development projects across the Oromia region are showing strong progress this quarter.",
+    "excerpt": "Development projects show strong progress.",
+    "image_url": "https://picsum.photos/seed/news2/800/400",
+    "category_name": "Economy",
+    "category_slug": "economy",
+    "published_at": "2026-09-17T14:30:00",
+    "view_count": 189,
+    "is_featured": true
+  },
+  {
+    "id": 3,
+    "title": "Oromia Sports Festival Draws Record Attendance",
+    "content": "The annual Oromia Sports Festival attracted record numbers of participants and spectators this year.",
+    "excerpt": "Sports festival draws record attendance.",
+    "image_url": "https://picsum.photos/seed/news3/800/400",
+    "category_name": "Sport",
+    "category_slug": "sport",
+    "published_at": "2026-09-16T09:15:00",
+    "view_count": 342,
+    "is_featured": true
+  },
+  {
+    "id": 4,
+    "title": "New Education Initiative Announced for Rural Areas",
+    "content": "A new education initiative focused on rural communities has been announced by regional officials.",
+    "excerpt": "New education initiative for rural areas.",
+    "image_url": "https://picsum.photos/seed/news4/800/400",
+    "category_name": "Social",
+    "category_slug": "social",
+    "published_at": "2026-09-15T11:00:00",
+    "view_count": 156,
+    "is_featured": false
+  },
+  {
+    "id": 5,
+    "title": "Environmental Conservation Efforts Expand Across Region",
+    "content": "Environmental conservation programs are expanding to cover more areas of the Oromia region.",
+    "excerpt": "Conservation efforts expand across region.",
+    "image_url": "https://picsum.photos/seed/news5/800/400",
+    "category_name": "Environment",
+    "category_slug": "environment",
+    "published_at": "2026-09-14T16:45:00",
+    "view_count": 98,
+    "is_featured": false
+  },
+  {
+    "id": 6,
+    "title": "Political Leaders Meet to Discuss Regional Priorities",
+    "content": "Political leaders from across Oromia met this week to discuss regional priorities for the coming year.",
+    "excerpt": "Leaders discuss regional priorities.",
+    "image_url": "https://picsum.photos/seed/news6/800/400",
+    "category_name": "Politics",
+    "category_slug": "politics",
+    "published_at": "2026-09-13T08:30:00",
+    "view_count": 267,
+    "is_featured": false
+  },
+  {
+    "id": 7,
+    "title": "Technology Hub Opens in Adama",
+    "content": "A new technology hub has opened in Adama to support local startups and innovation.",
+    "excerpt": "New tech hub opens in Adama.",
+    "image_url": "https://picsum.photos/seed/news7/800/400",
+    "category_name": "Technology",
+    "category_slug": "technology",
+    "published_at": "2026-09-12T13:20:00",
+    "view_count": 178,
+    "is_featured": false
+  },
+  {
+    "id": 8,
+    "title": "Cultural Heritage Festival Celebrates Oromo Traditions",
+    "content": "The annual cultural heritage festival celebrated the rich traditions of the Oromo people.",
+    "excerpt": "Cultural festival celebrates Oromo traditions.",
+    "image_url": "https://picsum.photos/seed/news8/800/400",
+    "category_name": "Features",
+    "category_slug": "features",
+    "published_at": "2026-09-11T17:00:00",
+    "view_count": 412,
+    "is_featured": true
+  },
+  {
+    "id": 9,
+    "title": "Agricultural Innovation Boosts Crop Yields",
+    "content": "New agricultural techniques are boosting crop yields in farming communities across Oromia.",
+    "excerpt": "Agricultural innovation boosts yields.",
+    "image_url": "https://picsum.photos/seed/news9/800/400",
+    "category_name": "Economy",
+    "category_slug": "economy",
+    "published_at": "2026-09-10T10:15:00",
+    "view_count": 134,
+    "is_featured": false
+  },
+  {
+    "id": 10,
+    "title": "Health Services Expanded to Remote Communities",
+    "content": "Health services have been expanded to reach more remote communities in the region.",
+    "excerpt": "Health services expand to remote areas.",
+    "image_url": "https://picsum.photos/seed/news10/800/400",
+    "category_name": "Social",
+    "category_slug": "social",
+    "published_at": "2026-09-09T12:00:00",
+    "view_count": 201,
+    "is_featured": false
+  }
+]

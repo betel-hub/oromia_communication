@@ -1,0 +1,149 @@
+{
+  "regional_sectors": [
+    {
+      "id": 1,
+      "name": "Oromia Health Bureau",
+      "description": "Responsible for public health services, hospitals, and health centers across Oromia.",
+      "phone": "+251 115 541 816",
+      "email": "info@health.oromia.gov.et"
+    },
+    {
+      "id": 2,
+      "name": "Oromia Education Bureau",
+      "description": "Oversees primary, secondary, and higher education institutions.",
+      "phone": "+251 115 541 817",
+      "email": "info@education.oromia.gov.et"
+    },
+    {
+      "id": 3,
+      "name": "Oromia Agriculture Bureau",
+      "description": "Promotes agricultural development, food security, and rural transformation.",
+      "phone": "+251 115 541 818",
+      "email": "info@agriculture.oromia.gov.et"
+    },
+    {
+      "id": 4,
+      "name": "Oromia Communication Bureau",
+      "description": "Manages public communication, media relations, and information dissemination.",
+      "phone": "+251 115 541 801",
+      "email": "info@oromiacommunication.gov.et"
+    },
+    {
+      "id": 5,
+      "name": "Oromia Water and Energy Bureau",
+      "description": "Water resource management and energy infrastructure development.",
+      "phone": "+251 115 541 819",
+      "email": "info@water.oromia.gov.et"
+    },
+    {
+      "id": 6,
+      "name": "Oromia Trade and Industry Bureau",
+      "description": "Supports trade, investment, and industrial development in Oromia.",
+      "phone": "+251 115 541 820",
+      "email": "info@trade.oromia.gov.et"
+    }
+  ],
+  "zones": [
+    { "id": 1, "name": "Arsi Zone", "type": "zone", "child_count": 3 },
+    { "id": 2, "name": "Bale Zone", "type": "zone", "child_count": 3 },
+    { "id": 3, "name": "Jimma Zone", "type": "zone", "child_count": 3 }
+  ],
+  "woredas": {
+    "1": [
+      { "id": 11, "name": "Dodota Woreda", "type": "woreda", "parent_id": 1, "child_count": 3 },
+      { "id": 12, "name": "Jeju Woreda", "type": "woreda", "parent_id": 1, "child_count": 3 },
+      { "id": 13, "name": "Merti Woreda", "type": "woreda", "parent_id": 1, "child_count": 3 }
+    ],
+    "2": [
+      { "id": 21, "name": "Adaba Woreda", "type": "woreda", "parent_id": 2, "child_count": 3 },
+      { "id": 22, "name": "Delo Menna Woreda", "type": "woreda", "parent_id": 2, "child_count": 3 },
+      { "id": 23, "name": "Ginnir Woreda", "type": "woreda", "parent_id": 2, "child_count": 3 }
+    ],
+    "3": [
+      { "id": 31, "name": "Dedo Woreda", "type": "woreda", "parent_id": 3, "child_count": 3 },
+      { "id": 32, "name": "Gomma Woreda", "type": "woreda", "parent_id": 3, "child_count": 3 },
+      { "id": 33, "name": "Limu Woreda", "type": "woreda", "parent_id": 3, "child_count": 3 }
+    ]
+  },
+  "cities": [
+    { "id": 101, "name": "Adama City", "type": "city", "child_count": 2 },
+    { "id": 102, "name": "Bishoftu City", "type": "city", "child_count": 2 }
+  ],
+  "sub_cities": {
+    "101": [
+      { "id": 1011, "name": "Adama Ketema Sub-City", "type": "sub_city", "parent_id": 101, "child_count": 3 },
+      { "id": 1012, "name": "Bole Sub-City", "type": "sub_city", "parent_id": 101, "child_count": 3 }
+    ],
+    "102": [
+      { "id": 1021, "name": "Bishoftu Ketema Sub-City", "type": "sub_city", "parent_id": 102, "child_count": 3 },
+      { "id": 1022, "name": "Kebele 01 Sub-City", "type": "sub_city", "parent_id": 102, "child_count": 3 }
+    ]
+  },
+  "kebeles": {
+    "11": [
+      { "id": 111, "name": "Kebele 01", "type": "kebele", "parent_id": 11 },
+      { "id": 112, "name": "Kebele 02", "type": "kebele", "parent_id": 11 },
+      { "id": 113, "name": "Kebele 03", "type": "kebele", "parent_id": 11 }
+    ],
+    "12": [
+      { "id": 121, "name": "Kebele 01", "type": "kebele", "parent_id": 12 },
+      { "id": 122, "name": "Kebele 02", "type": "kebele", "parent_id": 12 },
+      { "id": 123, "name": "Kebele 03", "type": "kebele", "parent_id": 12 }
+    ],
+    "13": [
+      { "id": 131, "name": "Kebele 01", "type": "kebele", "parent_id": 13 },
+      { "id": 132, "name": "Kebele 02", "type": "kebele", "parent_id": 13 },
+      { "id": 133, "name": "Kebele 03", "type": "kebele", "parent_id": 13 }
+    ],
+    "21": [
+      { "id": 211, "name": "Kebele 01", "type": "kebele", "parent_id": 21 },
+      { "id": 212, "name": "Kebele 02", "type": "kebele", "parent_id": 21 },
+      { "id": 213, "name": "Kebele 03", "type": "kebele", "parent_id": 21 }
+    ],
+    "22": [
+      { "id": 221, "name": "Kebele 01", "type": "kebele", "parent_id": 22 },
+      { "id": 222, "name": "Kebele 02", "type": "kebele", "parent_id": 22 },
+      { "id": 223, "name": "Kebele 03", "type": "kebele", "parent_id": 22 }
+    ],
+    "23": [
+      { "id": 231, "name": "Kebele 01", "type": "kebele", "parent_id": 23 },
+      { "id": 232, "name": "Kebele 02", "type": "kebele", "parent_id": 23 },
+      { "id": 233, "name": "Kebele 03", "type": "kebele", "parent_id": 23 }
+    ],
+    "31": [
+      { "id": 311, "name": "Kebele 01", "type": "kebele", "parent_id": 31 },
+      { "id": 312, "name": "Kebele 02", "type": "kebele", "parent_id": 31 },
+      { "id": 313, "name": "Kebele 03", "type": "kebele", "parent_id": 31 }
+    ],
+    "32": [
+      { "id": 321, "name": "Kebele 01", "type": "kebele", "parent_id": 32 },
+      { "id": 322, "name": "Kebele 02", "type": "kebele", "parent_id": 32 },
+      { "id": 323, "name": "Kebele 03", "type": "kebele", "parent_id": 32 }
+    ],
+    "33": [
+      { "id": 331, "name": "Kebele 01", "type": "kebele", "parent_id": 33 },
+      { "id": 332, "name": "Kebele 02", "type": "kebele", "parent_id": 33 },
+      { "id": 333, "name": "Kebele 03", "type": "kebele", "parent_id": 33 }
+    ],
+    "1011": [
+      { "id": 10111, "name": "Kebele 01", "type": "kebele", "parent_id": 1011 },
+      { "id": 10112, "name": "Kebele 02", "type": "kebele", "parent_id": 1011 },
+      { "id": 10113, "name": "Kebele 03", "type": "kebele", "parent_id": 1011 }
+    ],
+    "1012": [
+      { "id": 10121, "name": "Kebele 01", "type": "kebele", "parent_id": 1012 },
+      { "id": 10122, "name": "Kebele 02", "type": "kebele", "parent_id": 1012 },
+      { "id": 10123, "name": "Kebele 03", "type": "kebele", "parent_id": 1012 }
+    ],
+    "1021": [
+      { "id": 10211, "name": "Kebele 01", "type": "kebele", "parent_id": 1021 },
+      { "id": 10212, "name": "Kebele 02", "type": "kebele", "parent_id": 1021 },
+      { "id": 10213, "name": "Kebele 03", "type": "kebele", "parent_id": 1021 }
+    ],
+    "1022": [
+      { "id": 10221, "name": "Kebele 01", "type": "kebele", "parent_id": 1022 },
+      { "id": 10222, "name": "Kebele 02", "type": "kebele", "parent_id": 1022 },
+      { "id": 10223, "name": "Kebele 03", "type": "kebele", "parent_id": 1022 }
+    ]
+  }
+}
