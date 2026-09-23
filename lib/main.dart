@@ -1,22 +1,22 @@
-
-import 'models/news.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/register_screen.dart';
-import 'screens/auth/forgot_password_screen.dart';
-import 'screens/auth/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:meine_entwickler/core/theme/app_colors.dart';
 import 'package:meine_entwickler/core/theme/app_theme.dart';
 import 'package:meine_entwickler/l10n/app_localizations.dart';
 
 import 'models/media.dart';
+import 'models/news.dart';
 import 'models/news_category.dart';
 import 'models/publication.dart';
 import 'providers/language_provider.dart';
 import 'screens/about/about_screen.dart';
+import 'screens/auth/forgot_password_screen.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/profile_screen.dart';
+import 'screens/auth/register_screen.dart';
 import 'screens/government/government_menu_screen.dart';
 import 'screens/government/hierarchy_screen.dart';
 import 'screens/government/regional_sectors_screen.dart';
@@ -78,37 +78,43 @@ class OromiaApp extends ConsumerWidget {
 final GoRouter _router = GoRouter(
   initialLocation: '/splash',
   routes: [
-
-    GoRoute(
-  path: '/login',
-  name: 'login',
-  builder: (context, state) => const LoginScreen(),
-),
-GoRoute(
-  path: '/register',
-  name: 'register',
-  builder: (context, state) => const RegisterScreen(),
-),
-GoRoute(
-  path: '/forgot-password',
-  name: 'forgotPassword',
-  builder: (context, state) => const ForgotPasswordScreen(),
-),
-GoRoute(
-  path: '/profile',
-  name: 'profile',
-  builder: (context, state) => const ProfileScreen(),
-),
+    // ============ SPLASH ============
     GoRoute(
       path: '/splash',
       name: 'splash',
       builder: (context, state) => const SplashScreen(),
     ),
+
+    // ============ HOME ============
     GoRoute(
       path: '/home',
       name: 'home',
       builder: (context, state) => const HomeScreen(),
     ),
+
+    // ============ AUTH ============
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      name: 'register',
+      builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      name: 'profile',
+      builder: (context, state) => const ProfileScreen(),
+    ),
+
+    // ============ NEWS ============
     GoRoute(
       path: '/news/:categorySlug',
       name: 'categoryNews',
@@ -119,18 +125,38 @@ GoRoute(
       },
     ),
     GoRoute(
-  path: '/news/:categorySlug/:id',
-  name: 'newsDetail',
-  builder: (context, state) {
-    final news = state.extra as News?;
-    if (news == null) {
-      return const Scaffold(
-        body: Center(child: Text('News not found')),
-      );
-    }
-    return NewsDetailScreen(news: news);
-  },
-),
+      path: '/news/:categorySlug/:id',
+      name: 'newsDetail',
+      builder: (context, state) {
+        final news = state.extra as News?;
+        if (news == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Page Not Found')),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline,
+                      size: 64, color: AppColors.error),
+                  const SizedBox(height: 16),
+                  const Text('News not found',
+                      style: TextStyle(fontSize: 16)),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () => context.go('/home'),
+                    icon: const Icon(Icons.home),
+                    label: const Text('Go Home'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return NewsDetailScreen(news: news);
+      },
+    ),
+
+    // ============ GOVERNMENT ============
     GoRoute(
       path: '/government',
       name: 'government',
@@ -167,6 +193,8 @@ GoRoute(
         );
       },
     ),
+
+    // ============ MEDIA ============
     GoRoute(
       path: '/media/:type',
       name: 'mediaList',
@@ -176,6 +204,8 @@ GoRoute(
         return MediaListScreen(type: type);
       },
     ),
+
+    // ============ KALLACHA OROMIA ============
     GoRoute(
       path: '/kallacha/:type',
       name: 'publicationList',
@@ -189,10 +219,13 @@ GoRoute(
       path: '/kallacha/reader/:bookId',
       name: 'reader',
       builder: (context, state) {
-        final id = int.tryParse(state.pathParameters['bookId'] ?? '0') ?? 0;
+        final id =
+            int.tryParse(state.pathParameters['bookId'] ?? '0') ?? 0;
         return ReaderScreen(bookId: id);
       },
     ),
+
+    // ============ SHOP ============
     GoRoute(
       path: '/shop',
       name: 'shop',
@@ -208,21 +241,29 @@ GoRoute(
       name: 'checkout',
       builder: (context, state) => const CheckoutScreen(),
     ),
+
+    // ============ TENDERS ============
     GoRoute(
       path: '/tenders',
       name: 'tenders',
       builder: (context, state) => const TendersScreen(),
     ),
+
+    // ============ ABOUT ============
     GoRoute(
       path: '/about',
       name: 'about',
       builder: (context, state) => const AboutScreen(),
     ),
+
+    // ============ SEARCH ============
     GoRoute(
       path: '/search',
       name: 'search',
       builder: (context, state) => const SearchScreen(),
     ),
+
+    // ============ LANGUAGE ============
     GoRoute(
       path: '/language',
       name: 'language',

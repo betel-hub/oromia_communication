@@ -31,18 +31,24 @@ class NewsDetailScreen extends StatelessWidget {
             SizedBox(
               height: 250,
               width: double.infinity,
-              child: CachedNetworkImage(
-                imageUrl: news.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  color: AppColors.lightGray,
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  color: AppColors.lightGray,
-                  child: const Icon(Icons.image, size: 80),
-                ),
-              ),
+              child: news.imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: news.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: AppColors.lightGray,
+                        child: const Center(
+                            child: CircularProgressIndicator()),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.lightGray,
+                        child: const Icon(Icons.image, size: 80),
+                      ),
+                    )
+                  : Container(
+                      color: AppColors.lightGray,
+                      child: const Icon(Icons.image, size: 80),
+                    ),
             ),
 
             // ============ CONTENT ============
@@ -91,7 +97,8 @@ class NewsDetailScreen extends StatelessWidget {
                           size: 14, color: AppColors.mediumGray),
                       const SizedBox(width: 4),
                       Text(
-                        DateFormat('MMMM d, yyyy').format(news.publishedAt),
+                        DateFormat('MMMM d, yyyy')
+                            .format(news.publishedAt),
                         style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.mediumGray,
@@ -117,35 +124,8 @@ class NewsDetailScreen extends StatelessWidget {
                   Text(
                     news.content.isNotEmpty
                         ? news.content
-                        : 'Full content will be available soon.',
+                        : 'No content available.',
                     style: const TextStyle(fontSize: 16, height: 1.7),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Info banner about backend
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryBlue.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            size: 18, color: AppColors.primaryBlue),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Full article content will load once the backend is fixed.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primaryBlue,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
 
                   const SizedBox(height: 24),

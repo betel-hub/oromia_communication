@@ -24,7 +24,7 @@ class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final newsAsync = ref.watch(categoryNewsProvider(widget.category.slug));
+    final newsAsync = ref.watch(allNewsProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.category.displayName)),
@@ -48,8 +48,7 @@ class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
                         Icon(Icons.newspaper,
                             size: 64, color: AppColors.mediumGray),
                         SizedBox(height: 16),
-                        Text('No news found',
-                            style: TextStyle(color: AppColors.darkGray)),
+                        Text('No news available'),
                       ],
                     ),
                   );
@@ -67,7 +66,7 @@ class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
                       isHorizontal: false,
                       onTap: () {
                         context.push(
-                          '/news/${widget.category.slug}/${news.id}',
+                          '/news/all/${news.id}',
                           extra: news,
                         );
                       },

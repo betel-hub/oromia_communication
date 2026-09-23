@@ -4,9 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../providers/media_provider.dart';
 import '../../providers/news_provider.dart';
-import '../../providers/publication_provider.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -28,21 +26,29 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final newsAsync = ref.watch(allNewsProvider);
-    final mediaAsync = ref.watch(mediaListProvider('video'));
-    final pubsAsync = ref.watch(publicationListProvider('weekly'));
 
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _ctrl,
-          autofocus: true,
-          style: const TextStyle(color: AppColors.white),
-          decoration: const InputDecoration(
-            hintText: 'Search news, media, publications...',
-            hintStyle: TextStyle(color: AppColors.white70),
-            border: InputBorder.none,
+        title: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
           ),
-          onChanged: (v) => setState(() => _query = v.toLowerCase()),
+          child: TextField(
+            controller: _ctrl,
+            autofocus: true,
+            style: const TextStyle(color: Colors.black, fontSize: 15),
+            cursorColor: AppColors.primaryBlue,
+            decoration: const InputDecoration(
+              hintText: 'Search news...',
+              hintStyle: TextStyle(color: AppColors.mediumGray, fontSize: 14),
+              border: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              prefixIcon: Icon(Icons.search, color: AppColors.primaryBlue),
+            ),
+            onChanged: (v) => setState(() => _query = v.toLowerCase()),
+          ),
         ),
         actions: [
           IconButton(
@@ -60,144 +66,86 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
       body: _query.isEmpty
           ? const Center(
-              child: Text('Start typing to search...',
-                  style: TextStyle(color: AppColors.mediumGray)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search, size: 64, color: AppColors.mediumGray),
+                  SizedBox(height: 16),
+                  Text('Start typing to search...',
+                      style: TextStyle(color: AppColors.mediumGray)),
+                ],
+              ),
             )
-          : ListView(
-              padding: const EdgeInsets.all(12),
-              children: [
-                // News Results
-                newsAsync.when(
-                  data: (news) {
-                    final matches = news
-                        .where((n) =>
-                            n.title.toLowerCase().contains(_query))
-                        .take(5)
-                        .toList();
-                    if (matches.isEmpty) return const SizedBox.shrink();
-                    return _buildSection(
-                      title: 'News (${matches.length})',
-                      children: matches
-                          .map((n) => ListTile(
-                                leading: const Icon(Icons.newspaper,
-                                    color: AppColors.primaryBlue),
-                                title: Text(n.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis),
-                                onTap: () => context.push(
-                                    '/news/${n.categorySlug}/${n.id}'),
-                              ))
-                          .toList(),
-                    );
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (context, error) => const SizedBox.shrink(),
-                ),
+          : newsAsync.when(
+              data: (newsList) {
+                final matches = newsList
+                    .where((n) =>
+                        n.title.toLowerCase().contains(_query) ||
+                        n.content.toLowerCase().contains(_query))
+                    .toList();
 
-                // Media Results
-                mediaAsync.when(
-                  data: (media) {
-                    final matches = media
-                        .where((m) =>
-                            m.title.toLowerCase().contains(_query))
-                        .take(5)
-                        .toList();
-                    if (matches.isEmpty) return const SizedBox.shrink();
-                    return _buildSection(
-                      title: 'Media (${matches.length})',
-                      children: matches
-                          .map((m) => ListTile(
-                                leading: m.thumbnailUrl != null
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(6),
-                                        child: CachedNetworkImage(
-                                          imageUrl: m.thumbnailUrl!,
-                                          width: 40,
-                                          height: 40,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : const Icon(Icons.video_library,
-                                        color: AppColors.primaryBlue),
-                                title: Text(m.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis),
-                                onTap: () {},
-                              ))
-                          .toList(),
-                    );
-                  },
-                  loading: () => const SizedBox.shrink(),
-                  error: (context, error) => const SizedBox.shrink(),
-                ),
+                if (matches.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.search_off,
+                            size: 64, color: AppColors.mediumGray),
+                        SizedBox(height: 16),
+                        Text('No results found',
+                            style: TextStyle(color: AppColors.mediumGray)),
+                      ],
+                    ),
+                  );
+                }
 
-                // Publications Results
-                pubsAsync.when(
-                  data: (pubs) {
-                    final matches = pubs
-                        .where((p) =>
-                            p.title.toLowerCase().contains(_query))
-                        .take(5)
-                        .toList();
-                    if (matches.isEmpty) return const SizedBox.shrink();
-                    return _buildSection(
-                      title: 'Kallacha Oromia (${matches.length})',
-                      children: matches
-                          .map((p) => ListTile(
-                                leading: p.coverUrl.isNotEmpty
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(6),
-                                        child: CachedNetworkImage(
-                                          imageUrl: p.coverUrl,
-                                          width: 40,
-                                          height: 40,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )
-                                    : const Icon(Icons.book,
-                                        color: AppColors.primaryBlue),
-                                title: Text(p.title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis),
-                                onTap: () {},
-                              ))
-                          .toList(),
+                return ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: matches.length,
+                  itemBuilder: (context, index) {
+                    final n = matches[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: n.imageUrl.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: CachedNetworkImage(
+                                  imageUrl: n.imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.image,
+                                          color: AppColors.mediumGray),
+                                ),
+                              )
+                            : const Icon(Icons.newspaper,
+                                color: AppColors.primaryBlue),
+                        title: Text(
+                          n.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 14),
+                        ),
+                        subtitle: Text(
+                          '${n.viewCount} views',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        onTap: () => context.push(
+                          '/news/all/${n.id}',
+                          extra: n,
+                        ),
+                      ),
                     );
                   },
-                  loading: () => const SizedBox.shrink(),
-                  error: (context, error) => const SizedBox.shrink(),
-                ),
-              ],
+                );
+              },
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Center(child: Text('Error: $err')),
             ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required List<Widget> children,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primaryBlue,
-            ),
-          ),
-        ),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Column(children: children),
-        ),
-        const SizedBox(height: 16),
-      ],
     );
   }
 }
