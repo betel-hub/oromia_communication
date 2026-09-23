@@ -1,3 +1,9 @@
+
+import 'models/news.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/auth/register_screen.dart';
+import 'screens/auth/forgot_password_screen.dart';
+import 'screens/auth/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,6 +78,27 @@ class OromiaApp extends ConsumerWidget {
 final GoRouter _router = GoRouter(
   initialLocation: '/splash',
   routes: [
+
+    GoRoute(
+  path: '/login',
+  name: 'login',
+  builder: (context, state) => const LoginScreen(),
+),
+GoRoute(
+  path: '/register',
+  name: 'register',
+  builder: (context, state) => const RegisterScreen(),
+),
+GoRoute(
+  path: '/forgot-password',
+  name: 'forgotPassword',
+  builder: (context, state) => const ForgotPasswordScreen(),
+),
+GoRoute(
+  path: '/profile',
+  name: 'profile',
+  builder: (context, state) => const ProfileScreen(),
+),
     GoRoute(
       path: '/splash',
       name: 'splash',
@@ -92,13 +119,18 @@ final GoRouter _router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/news/:categorySlug/:id',
-      name: 'newsDetail',
-      builder: (context, state) {
-        final id = int.tryParse(state.pathParameters['id'] ?? '0') ?? 0;
-        return NewsDetailScreen(newsId: id);
-      },
-    ),
+  path: '/news/:categorySlug/:id',
+  name: 'newsDetail',
+  builder: (context, state) {
+    final news = state.extra as News?;
+    if (news == null) {
+      return const Scaffold(
+        body: Center(child: Text('News not found')),
+      );
+    }
+    return NewsDetailScreen(news: news);
+  },
+),
     GoRoute(
       path: '/government',
       name: 'government',

@@ -1,45 +1,81 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
-
+import 'package:flutter/foundation.dart';
+import '../core/network/api_client.dart';
 import '../models/news.dart';
 
 class NewsRepository {
-  static const bool useMock = true;
+  final ApiClient _client = ApiClient();
 
-  Future<List<News>> getAllNews() async {
-    if (useMock) {
-      final jsonString = await rootBundle.loadString('assets/mock/news.json');
-      final List<dynamic> jsonList = json.decode(jsonString);
-      return jsonList.map((json) => News.fromJson(json)).toList();
-    }
-    return [];
-  }
-
-  Future<List<News>> getByCategory(String categorySlug) async {
-    final all = await getAllNews();
-    if (categorySlug == 'all') return all;
-    return all.where((n) => n.categorySlug == categorySlug).toList();
-  }
-
-  Future<List<News>> getFeatured() async {
-    final all = await getAllNews();
-    return all.where((n) => n.isFeatured).toList();
-  }
-
-  Future<News?> getById(int id) async {
-    final all = await getAllNews();
+  // ============ ALL NEWS ============
+  Future<List<News>> getAllNews({int page = 1, int limit = 20}) async {
     try {
-      return all.firstWhere((n) => n.id == id);
+      final response = await _client.dio.get(
+        'news',
+        queryParameters: {'page': page, 'limit': limit},
+      );
+
+      if (response.data['success'] == true) {
+        final items = response.data['data']['items'] as List<dynamic>;
+        return items.map((j) => News.fromJson(j)).toList();
+      }
+      return [];
     } catch (e) {
+      debugPrint('Error loading news: $e');
+      return [];
+    }
+  }
+
+  // ============ BY CATEGORY ============
+  // TODO: Backend does not yet support category filter.
+  // Currently returns all news. Update when backend is fixed.
+  Future<List<News>> getByCategory(
+    String slug, {
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _client.dio.get(
+        'news',
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+          'category': slug == 'all' ? null : slug,
+        },
+      );
+
+      if (response.data['success'] == true) {
+        final items = response.data['data']['items'] as List<dynamic>;
+        return items.map((j) => News.fromJson(j)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error loading category news: $e');
+      return [];
+    }
+  }
+
+  // ============ FEATURED ============
+  Future<List<News>> getFeatured() async {
+    final all = await getAllNews(limit: 10);
+    return all.take(5).toList();
+  }
+
+  // ============ DETAIL ============
+  Future<News?> getById(String id) async {
+    try {
+      final response = await _client.dio.get('news/$id');
+      if (response.data['success'] == true) {
+        return News.fromJson(response.data['data']);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error loading news detail: $e');
       return null;
     }
   }
 
-  Future<List<News>> getRelated(int id, String categorySlug) async {
-    final all = await getAllNews();
-    return all
-        .where((n) => n.categorySlug == categorySlug && n.id != id)
-        .take(5)
-        .toList();
+  // ============ RELATED ============
+  Future<List<News>> getRelated(String id, String categorySlug) async {
+    final list = await getByCategory(categorySlug, limit: 6);
+    return list.where((n) => n.id != id).take(5).toList();
   }
 }

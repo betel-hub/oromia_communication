@@ -14,11 +14,9 @@ class AppDrawer extends StatelessWidget {
         color: AppColors.primaryBlue,
         child: Column(
           children: [
-            // Header
+            // ============ HEADER ============
             DrawerHeader(
-              decoration: const BoxDecoration(
-                color: AppColors.darkBlue,
-              ),
+              decoration: const BoxDecoration(color: AppColors.darkBlue),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -49,146 +47,202 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            // Menu items
+            // ============ MENU ITEMS ============
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildItem(context, Icons.home, 'Home', () {
-                    Navigator.pop(context);
-                    context.go('/home');
-                  }),
+              child: Material(
+                color: Colors.transparent,
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildItem(context, Icons.home, 'Home', () {
+                      Navigator.pop(context);
+                      context.go('/home');
+                    }),
 
-                  // 👇 EXPANDABLE NEWS ITEM 👇
-                  ExpansionTile(
-                    leading: const Icon(Icons.circle,
-                        size: 8, color: AppColors.primaryRed),
-                    title: const Text(
-                      'News',
-                      style: TextStyle(color: AppColors.white, fontSize: 15),
+                    // ------- NEWS EXPANDABLE -------
+                    ExpansionTile(
+                      leading: const Icon(Icons.circle,
+                          size: 8, color: AppColors.primaryRed),
+                      title: const Text(
+                        'News',
+                        style: TextStyle(
+                            color: AppColors.white, fontSize: 15),
+                      ),
+                      iconColor: AppColors.white,
+                      collapsedIconColor: AppColors.white,
+                      backgroundColor: AppColors.primaryBlue,
+                      collapsedBackgroundColor: AppColors.primaryBlue,
+                      children: [
+                        NewsCategory.politics,
+                        NewsCategory.social,
+                        NewsCategory.economy,
+                        NewsCategory.sport,
+                        NewsCategory.technology,
+                        NewsCategory.environment,
+                        NewsCategory.features,
+                      ].map((cat) {
+                        return ListTile(
+                          contentPadding: const EdgeInsets.only(
+                              left: 48, right: 16),
+                          title: Text(
+                            cat.displayName,
+                            style: const TextStyle(
+                                color: AppColors.white70, fontSize: 13),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/news/${cat.slug}');
+                          },
+                        );
+                      }).toList(),
                     ),
-                    iconColor: AppColors.white,
-                    collapsedIconColor: AppColors.white,
-                    backgroundColor: AppColors.primaryBlue,
-                    collapsedBackgroundColor: AppColors.primaryBlue,
-                    children: [
-                      NewsCategory.politics,
-                      NewsCategory.social,
-                      NewsCategory.economy,
-                      NewsCategory.sport,
-                      NewsCategory.technology,
-                      NewsCategory.environment,
-                      NewsCategory.features,
-                    ].map((cat) {
-                      return ListTile(
-                        contentPadding:
-                            const EdgeInsets.only(left: 48, right: 16),
-                        title: Text(
-                          cat.displayName,
-                          style: const TextStyle(
-                              color: AppColors.white70, fontSize: 13),
+
+                    // ------- TENDERS -------
+                    _buildItem(context, Icons.gavel, 'Tenders', () {
+                      Navigator.pop(context);
+                      context.push('/tenders');
+                    }),
+
+                    // ------- GOVERNMENT EXPANDABLE -------
+                    ExpansionTile(
+                      leading: const Icon(Icons.circle,
+                          size: 8, color: AppColors.primaryRed),
+                      title: const Text('Government',
+                          style: TextStyle(
+                              color: AppColors.white, fontSize: 15)),
+                      iconColor: AppColors.white,
+                      collapsedIconColor: AppColors.white,
+                      backgroundColor: AppColors.primaryBlue,
+                      collapsedBackgroundColor: AppColors.primaryBlue,
+                      children: [
+                        _buildSubItem(
+                          context,
+                          'Regional Sectors',
+                          () => context.push('/government/regional-sectors'),
                         ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          context.push('/news/${cat.slug}');
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  // 👆 END EXPANDABLE 👆
+                        _buildSubItem(
+                          context,
+                          'Zones → Woredas',
+                          () => context.push('/government/zone'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Cities → Sub-Cities',
+                          () => context.push('/government/city'),
+                        ),
+                      ],
+                    ),
 
-                 _buildItem(context, Icons.gavel, 'Tenders', () {
-  Navigator.pop(context);
-  context.push('/tenders');
-}),
-_buildItem(context, Icons.info_outline, 'About', () {
-  Navigator.pop(context);
-  context.push('/about');
-}),
+                    // ------- MEDIA EXPANDABLE -------
+                    ExpansionTile(
+                      leading: const Icon(Icons.circle,
+                          size: 8, color: AppColors.primaryRed),
+                      title: const Text('Media',
+                          style: TextStyle(
+                              color: AppColors.white, fontSize: 15)),
+                      iconColor: AppColors.white,
+                      collapsedIconColor: AppColors.white,
+                      backgroundColor: AppColors.primaryBlue,
+                      collapsedBackgroundColor: AppColors.primaryBlue,
+                      children: [
+                        _buildSubItem(
+                          context,
+                          'Press Release',
+                          () => context.push('/media/press-release'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Documentary',
+                          () => context.push('/media/documentary'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Video',
+                          () => context.push('/media/video'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Image & Gallery',
+                          () => context.push('/media/image-gallery'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Audio Files',
+                          () => context.push('/media/audio-files'),
+                        ),
+                      ],
+                    ),
 
-                  // 👇 GOVERNMENT EXPANDABLE 👇
-                  ExpansionTile(
-                    leading: const Icon(Icons.circle,
-                        size: 8, color: AppColors.primaryRed),
-                    title: const Text('Government',
-                        style:
-                            TextStyle(color: AppColors.white, fontSize: 15)),
-                    iconColor: AppColors.white,
-                    collapsedIconColor: AppColors.white,
-                    backgroundColor: AppColors.primaryBlue,
-                    collapsedBackgroundColor: AppColors.primaryBlue,
-                    children: [
-                      _buildSubItem(context, 'Regional Sectors',
-                          () => context.push('/government/regional-sectors')),
-                      _buildSubItem(context, 'Zones → Woredas',
-                          () => context.push('/government/zone')),
-                      _buildSubItem(context, 'Cities → Sub-Cities',
-                          () => context.push('/government/city')),
-                    ],
-                  ),
-                  // 👆 END GOVERNMENT EXPANDABLE 👆
+                    // ------- KALLACHA OROMIA EXPANDABLE -------
+                    ExpansionTile(
+                      leading: const Icon(Icons.circle,
+                          size: 8, color: AppColors.primaryRed),
+                      title: const Text('Kallacha Oromia',
+                          style: TextStyle(
+                              color: AppColors.white, fontSize: 15)),
+                      iconColor: AppColors.white,
+                      collapsedIconColor: AppColors.white,
+                      backgroundColor: AppColors.primaryBlue,
+                      collapsedBackgroundColor: AppColors.primaryBlue,
+                      children: [
+                        _buildSubItem(
+                          context,
+                          'Weekly Newspaper',
+                          () => context.push('/kallacha/weekly'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Quarterly Newspaper',
+                          () => context.push('/kallacha/quarterly'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Yearly Book',
+                          () => context.push('/kallacha/yearly'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Brochure',
+                          () => context.push('/kallacha/brochure'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Archive',
+                          () => context.push('/kallacha/archive'),
+                        ),
+                        _buildSubItem(
+                          context,
+                          'Files & Books',
+                          () => context.push('/kallacha/files'),
+                        ),
+                      ],
+                    ),
 
-                  ExpansionTile(
-  leading: const Icon(Icons.circle, size: 8, color: AppColors.primaryRed),
-  title: const Text('Media',
-      style: TextStyle(color: AppColors.white, fontSize: 15)),
-  iconColor: AppColors.white,
-  collapsedIconColor: AppColors.white,
-  backgroundColor: AppColors.primaryBlue,
-  collapsedBackgroundColor: AppColors.primaryBlue,
-  children: [
-    _buildSubItem(context, 'Press Release',
-        () => context.push('/media/press-release')),
-    _buildSubItem(context, 'Documentary',
-        () => context.push('/media/documentary')),
-    _buildSubItem(context, 'Video',
-        () => context.push('/media/video')),
-    _buildSubItem(context, 'Image & Gallery',
-        () => context.push('/media/image-gallery')),
-    _buildSubItem(context, 'Audio Files',
-        () => context.push('/media/audio-files')),
-  ],
-),
-                 ExpansionTile(
-  leading: const Icon(Icons.circle, size: 8, color: AppColors.primaryRed),
-  title: const Text('Kallacha Oromia',
-      style: TextStyle(color: AppColors.white, fontSize: 15)),
-  iconColor: AppColors.white,
-  collapsedIconColor: AppColors.white,
-  backgroundColor: AppColors.primaryBlue,
-  collapsedBackgroundColor: AppColors.primaryBlue,
-  children: [
-    _buildSubItem(context, 'Weekly Newspaper',
-        () => context.push('/kallacha/weekly')),
-    _buildSubItem(context, 'Quarterly Newspaper',
-        () => context.push('/kallacha/quarterly')),
-    _buildSubItem(context, 'Yearly Book',
-        () => context.push('/kallacha/yearly')),
-    _buildSubItem(context, 'Brochure',
-        () => context.push('/kallacha/brochure')),
-    _buildSubItem(context, 'Archive',
-        () => context.push('/kallacha/archive')),
-    _buildSubItem(context, 'Files & Books',
-        () => context.push('/kallacha/files')),
-  ],
-),
-                 _buildItem(context, Icons.shopping_bag, 'Shop', () {
-  Navigator.pop(context);
-  context.push('/shop');
-}),
-                  _buildItem(context, Icons.info_outline, 'About', () {
-                    Navigator.pop(context);
-                  }),
-                  const Divider(color: AppColors.white24),
-                 _buildItem(context, Icons.language, 'Language', () {
-  Navigator.pop(context);
-  context.push('/language');
-}),
-                ],
+                    // ------- SHOP -------
+                    _buildItem(context, Icons.shopping_bag, 'Shop', () {
+                      Navigator.pop(context);
+                      context.push('/shop');
+                    }),
+
+                    // ------- ABOUT -------
+                    _buildItem(context, Icons.info_outline, 'About', () {
+                      Navigator.pop(context);
+                      context.push('/about');
+                    }),
+
+                    const Divider(color: AppColors.white24),
+
+                    // ------- LANGUAGE -------
+                    _buildItem(context, Icons.language, 'Language', () {
+                      Navigator.pop(context);
+                      context.push('/language');
+                    }),
+                  ],
+                ),
               ),
             ),
 
-            // Footer
+            // ============ FOOTER ============
             Container(
               padding: const EdgeInsets.all(16),
               child: const Text(
@@ -206,6 +260,7 @@ _buildItem(context, Icons.info_outline, 'About', () {
     );
   }
 
+  // ============ MAIN MENU ITEM ============
   Widget _buildItem(
     BuildContext context,
     IconData icon,
@@ -230,13 +285,15 @@ _buildItem(context, Icons.info_outline, 'About', () {
     );
   }
 
-  // 👇 NEW helper method for sub-items 👇
+  // ============ SUB MENU ITEM ============
   Widget _buildSubItem(
       BuildContext context, String title, VoidCallback onTap) {
     return ListTile(
       contentPadding: const EdgeInsets.only(left: 48, right: 16),
-      title: Text(title,
-          style: const TextStyle(color: AppColors.white70, fontSize: 13)),
+      title: Text(
+        title,
+        style: const TextStyle(color: AppColors.white70, fontSize: 13),
+      ),
       onTap: () {
         Navigator.pop(context);
         onTap();

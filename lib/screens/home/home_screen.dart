@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../models/news.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/news_provider.dart';
 import '../../widgets/app_drawer.dart';
 import '../../widgets/news_card.dart';
@@ -20,69 +21,116 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Oromia Communication Bureau'),
         actions: [
-          IconButton(icon: const Icon(Icons.person_outline), onPressed: () {}),
           IconButton(
-  icon: const Icon(Icons.search),
-  onPressed: () => context.push('/search'),
-),
+            icon: const Icon(Icons.person_outline),
+            onPressed: () {
+              final isAuth = ref.read(authStateProvider).isAuthenticated;
+              context.push(isAuth ? '/profile' : '/login');
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => context.push('/search'),
+          ),
         ],
       ),
       drawer: const AppDrawer(),
       body: newsAsync.when(
-        data: (newsList) => _buildContent(context, newsList),
+        data: (newsList) {
+          if (newsList.isEmpty) {
+            return const Center(child: Text('No news available'));
+          }
+
+          final featured = newsList.take(5).toList();
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(allNewsProvider);
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Hero Carousel
+                  _buildHeroCarousel(context, featured),
+
+                  const SizedBox(height: 16),
+
+                  // Latest News header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Latest News',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => context.push('/news/all'),
+                          child: const Text(
+                            'View More →',
+                            style: TextStyle(
+                              color: AppColors.primaryRed,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // All news
+                  ...newsList.map((news) => NewsCard(
+                        news: news,
+                        isHorizontal: false,
+                        onTap: () => context.push(
+                          '/news/all/${news.id}',
+                          extra: news,
+                        ),
+                      )),
+
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline,
+                    size: 64, color: AppColors.error),
+                const SizedBox(height: 16),
+                const Text('Could not load news'),
+                const SizedBox(height: 8),
+                Text('$err',
+                    style: const TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(allNewsProvider),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  // ================================================================
-  // CONTENT
-  // ================================================================
-  Widget _buildContent(BuildContext context, List<News> newsList) {
-    final featured = newsList.where((n) => n.isFeatured).toList();
-    final politics = newsList.where((n) => n.categorySlug == 'politics').toList();
-    final features = newsList.where((n) => n.categorySlug == 'features').toList();
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Hero Carousel
-          if (featured.isNotEmpty) _buildHeroCarousel(context, featured),
-
-          const SizedBox(height: 16),
-
-          // Politics News Section
-          _buildSection(
-            context,
-            title: 'Politics News',
-            categorySlug: 'politics',
-            newsList: politics.isNotEmpty ? politics : newsList.take(5).toList(),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Feature News Section
-          _buildSection(
-            context,
-            title: 'Feature News',
-            categorySlug: 'features',
-            newsList: features.isNotEmpty
-                ? features
-                : newsList.skip(5).take(5).toList(),
-          ),
-
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // HERO CAROUSEL (with GestureDetector navigation)
-  // ================================================================
   Widget _buildHeroCarousel(BuildContext context, List<News> featured) {
+    if (featured.isEmpty) return const SizedBox.shrink();
+
     return SizedBox(
       height: 300,
       child: PageView.builder(
@@ -91,7 +139,7 @@ class HomeScreen extends ConsumerWidget {
           final news = featured[index];
           return GestureDetector(
             onTap: () {
-              context.push('/news/${news.categorySlug}/${news.id}');
+              context.push('/news/all/${news.id}', extra: news);
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -100,7 +148,6 @@ class HomeScreen extends ConsumerWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Image
                     CachedNetworkImage(
                       imageUrl: news.imageUrl,
                       fit: BoxFit.cover,
@@ -113,7 +160,6 @@ class HomeScreen extends ConsumerWidget {
                         child: const Icon(Icons.image, size: 60),
                       ),
                     ),
-                    // Gradient overlay
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -126,7 +172,6 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    // Content
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -140,9 +185,9 @@ class HomeScreen extends ConsumerWidget {
                               color: AppColors.primaryRed,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text(
-                              'Mata Duree • ${news.categoryName}',
-                              style: const TextStyle(
+                            child: const Text(
+                              'Recent News',
+                              style: TextStyle(
                                 color: AppColors.white,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -168,11 +213,9 @@ class HomeScreen extends ConsumerWidget {
                                   size: 12, color: AppColors.white70),
                               const SizedBox(width: 4),
                               Text(
-                                _formatDate(news.publishedAt),
+                                '${news.publishedAt.day}/${news.publishedAt.month}/${news.publishedAt.year}',
                                 style: const TextStyle(
-                                  color: AppColors.white70,
-                                  fontSize: 11,
-                                ),
+                                    color: AppColors.white70, fontSize: 11),
                               ),
                               const SizedBox(width: 12),
                               const Icon(Icons.remove_red_eye_outlined,
@@ -181,9 +224,7 @@ class HomeScreen extends ConsumerWidget {
                               Text(
                                 '${news.viewCount}',
                                 style: const TextStyle(
-                                  color: AppColors.white70,
-                                  fontSize: 11,
-                                ),
+                                    color: AppColors.white70, fontSize: 11),
                               ),
                             ],
                           ),
@@ -198,86 +239,5 @@ class HomeScreen extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  // ================================================================
-  // SECTION WITH "VIEW MORE" BUTTON (news cards navigate to detail)
-  // ================================================================
-  Widget _buildSection(
-    BuildContext context, {
-    required String title,
-    required String categorySlug,
-    required List<News> newsList,
-  }) {
-    if (newsList.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section header
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryBlue,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  context.push('/news/$categorySlug');
-                },
-                child: const Text(
-                  'View More →',
-                  style: TextStyle(
-                    color: AppColors.primaryRed,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Horizontal list
-        SizedBox(
-          height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: newsList.length,
-            itemBuilder: (context, index) {
-              final news = newsList[index];
-              return NewsCard(
-                news: news,
-                isHorizontal: true,
-                onTap: () {
-                  context.push('/news/${news.categorySlug}/${news.id}');
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ================================================================
-  // HELPERS
-  // ================================================================
-  String _formatDate(DateTime date) {
-    return '${date.day} ${_monthName(date.month)} ${date.year}';
-  }
-
-  String _monthName(int month) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return months[month - 1];
   }
 }

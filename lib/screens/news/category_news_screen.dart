@@ -1,6 +1,6 @@
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../models/news.dart';
@@ -15,7 +15,8 @@ class CategoryNewsScreen extends ConsumerStatefulWidget {
   const CategoryNewsScreen({super.key, required this.category});
 
   @override
-  ConsumerState<CategoryNewsScreen> createState() => _CategoryNewsScreenState();
+  ConsumerState<CategoryNewsScreen> createState() =>
+      _CategoryNewsScreenState();
 }
 
 class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
@@ -26,12 +27,9 @@ class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
     final newsAsync = ref.watch(categoryNewsProvider(widget.category.slug));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.category.displayName),
-      ),
+      appBar: AppBar(title: Text(widget.category.displayName)),
       body: Column(
         children: [
-          // Sort dropdown
           SortDropdown(
             initialValue: _sortBy,
             onChanged: (value) {
@@ -39,35 +37,47 @@ class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
             },
           ),
           const Divider(height: 1),
-          // News list
           Expanded(
             child: newsAsync.when(
               data: (newsList) {
-                final sorted = _sortNews(newsList);
-                if (sorted.isEmpty) {
-                  return _buildEmptyState();
+                if (newsList.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.newspaper,
+                            size: 64, color: AppColors.mediumGray),
+                        SizedBox(height: 16),
+                        Text('No news found',
+                            style: TextStyle(color: AppColors.darkGray)),
+                      ],
+                    ),
+                  );
                 }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(categoryNewsProvider(widget.category.slug));
+
+                final sorted = _sortNews(newsList);
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: sorted.length,
+                  itemBuilder: (context, index) {
+                    final news = sorted[index];
+                    return NewsCard(
+                      news: news,
+                      isHorizontal: false,
+                      onTap: () {
+                        context.push(
+                          '/news/${widget.category.slug}/${news.id}',
+                          extra: news,
+                        );
+                      },
+                    );
                   },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: sorted.length,
-                    itemBuilder: (context, index) {
-                      return NewsCard(
-                        news: sorted[index],
-                        isHorizontal: false,
-                       onTap: () {
-  context.push('/news/${widget.category.slug}/${sorted[index].id}');
-},
-                      );
-                    },
-                  ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Center(child: Text('Error: $err')),
             ),
           ),
         ],
@@ -83,21 +93,5 @@ class _CategoryNewsScreenState extends ConsumerState<CategoryNewsScreen> {
       sorted.sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
     }
     return sorted;
-  }
-
-  Widget _buildEmptyState() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.newspaper, size: 64, color: AppColors.mediumGray),
-          SizedBox(height: 16),
-          Text(
-            'No news found',
-            style: TextStyle(fontSize: 16, color: AppColors.darkGray),
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -48,6 +48,8 @@ dependencies:
 
   # Networking
   dio: ^5.4.3+1
+  flutter_secure_storage: ^9.2.2
+
 
   url_launcher: ^6.3.0
 
@@ -57,12 +59,16 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
+
+  flutter_native_splash: ^2.4.1        
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -75,3 +81,33 @@ flutter:
   assets:
     - assets/mock/
     - assets/images/
+
+
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon.png"
+  adaptive_icon_background: "#1B5FAF"
+  adaptive_icon_foreground: "assets/icon.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/icon.png"
+    background_color: "#1B5FAF"
+    theme_color: "#1B5FAF"
+  windows:
+    generate: true
+    image_path: "assets/icon.png"
+    icon_size: 48
+
+flutter_native_splash:
+  color: "#1B5FAF"
+  image: assets/icon.png
+  android: true
+  ios: false
+  web: true
+  fullscreen: true
+  android_12:
+    color: "#1B5FAF"
+    image: assets/icon.png
