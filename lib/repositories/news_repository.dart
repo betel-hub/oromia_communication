@@ -78,4 +78,23 @@ class NewsRepository {
     final list = await getByCategory(categorySlug, limit: 6);
     return list.where((n) => n.id != id).take(5).toList();
   }
+
+  // ============ SEARCH ============
+  Future<List<Map<String, dynamic>>> search(String query,
+      {String lang = 'en'}) async {
+    try {
+      final response = await _client.dio.get(
+        'search',
+        queryParameters: {'q': query, 'lang': lang, 'limit': 20},
+      );
+      if (response.data['success'] == true) {
+        return List<Map<String, dynamic>>.from(
+            response.data['data']['items'] ?? []);
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error searching: $e');
+      return [];
+    }
+  }
 }

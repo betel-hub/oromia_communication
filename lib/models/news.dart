@@ -1,7 +1,8 @@
 class News {
-  final String id;         // UUID from API (string, not int)
+  final String id;
   final String title;
-  final String content;
+  final String content;    // Raw HTML — will be rendered in detail screen
+  final String summary;    // Plain text for list previews
   final String? excerpt;
   final String imageUrl;
   final String categoryName;
@@ -14,6 +15,7 @@ class News {
     required this.id,
     required this.title,
     required this.content,
+    required this.summary,
     this.excerpt,
     required this.imageUrl,
     required this.categoryName,
@@ -24,19 +26,23 @@ class News {
   });
 
   factory News.fromJson(Map<String, dynamic> json) {
+    final rawBody =
+        (json['body'] ?? json['summary'] ?? json['content'] ?? '').toString();
+    final rawSummary = (json['summary'] ?? rawBody).toString();
+
     return News(
       id: (json['news_id'] ?? json['id'] ?? '').toString(),
       title: json['title']?.toString() ?? '',
-      content: (json['summary'] ?? json['content'] ?? json['body'] ?? '')
-          .toString(),
-      excerpt: json['summary']?.toString(),
+      content: rawBody,                    // HTML preserved for detail
+      summary: _stripHtml(rawSummary),     // Plain text for cards
+      excerpt: rawSummary,
       imageUrl: (json['thumbnail'] ?? json['image_url'] ?? '').toString(),
       categoryName:
           (json['category_name'] ?? json['category'] ?? '').toString(),
       categorySlug:
           (json['category_slug'] ?? json['category'] ?? '').toString(),
       publishedAt: _toDate(
-        json['news_created_date'] ?? json['published_at'],
+        json['created_at'] ?? json['news_created_date'] ?? json['published_at'],
       ),
       viewCount: _toInt(json['view_count'] ?? json['views']),
       isFeatured: json['is_featured'] == true,
@@ -70,4 +76,18 @@ DateTime _toDate(dynamic value) {
     return DateTime.tryParse(value) ?? DateTime.now();
   }
   return DateTime.now();
+}
+
+/// Strips HTML tags and returns plain text.
+String _stripHtml(String html) {
+  return html
+      .replaceAll(RegExp(r'<br\s*/?>'), '\n')
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .trim();
 }

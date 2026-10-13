@@ -22,6 +22,10 @@ class HomeScreen extends ConsumerWidget {
         title: const Text('Oromia Communication Bureau'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(allNewsProvider),
+          ),
+          IconButton(
             icon: const Icon(Icons.person_outline),
             onPressed: () {
               final isAuth = ref.read(authStateProvider).isAuthenticated;
@@ -40,89 +44,91 @@ class HomeScreen extends ConsumerWidget {
           if (newsList.isEmpty) {
             return const Center(child: Text('No news available'));
           }
-
-          final featured = newsList.take(5).toList();
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(allNewsProvider);
-            },
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Hero Carousel
-                  _buildHeroCarousel(context, featured),
-
-                  const SizedBox(height: 16),
-
-                  // Latest News header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Latest News',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryBlue,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => context.push('/news/all'),
-                          child: const Text(
-                            'View More →',
-                            style: TextStyle(
-                              color: AppColors.primaryRed,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // All news
-                  ...newsList.map((news) => NewsCard(
-                        news: news,
-                        isHorizontal: false,
-                        onTap: () => context.push(
-                          '/news/all/${news.id}',
-                          extra: news,
-                        ),
-                      )),
-
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ),
-          );
+          return _buildContent(context, newsList);
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(
+        error: (err, stack) => Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.error_outline,
-                    size: 64, color: AppColors.error),
+                    size: 60, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text('Could not load news'),
-                const SizedBox(height: 8),
-                Text('$err',
-                    style: const TextStyle(fontSize: 12),
-                    textAlign: TextAlign.center),
+                const Text('Could not load news',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.lightGray,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SelectableText(
+                    '$err',
+                    style: const TextStyle(fontSize: 11),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 const SizedBox(height: 16),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () => ref.invalidate(allNewsProvider),
-                  child: const Text('Retry'),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, List<News> newsList) {
+    final featured = newsList.take(5).toList();
+
+    return RefreshIndicator(
+      onRefresh: () async {},
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeroCarousel(context, featured),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Latest News',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryBlue,
+                      )),
+                  TextButton(
+                    onPressed: () => context.push('/news/all'),
+                    child: const Text('View More →',
+                        style: TextStyle(
+                          color: AppColors.primaryRed,
+                          fontWeight: FontWeight.w600,
+                        )),
+                  ),
+                ],
+              ),
+            ),
+            ...newsList.map((news) => NewsCard(
+                  news: news,
+                  isHorizontal: false,
+                  onTap: () => context.push(
+                    '/news/all/${news.id}',
+                    extra: news,
+                  ),
+                )),
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );
@@ -153,7 +159,8 @@ class HomeScreen extends ConsumerWidget {
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
                         color: AppColors.lightGray,
-                        child: const Center(child: CircularProgressIndicator()),
+                        child: const Center(
+                            child: CircularProgressIndicator()),
                       ),
                       errorWidget: (context, url, error) => Container(
                         color: AppColors.lightGray,
@@ -185,14 +192,12 @@ class HomeScreen extends ConsumerWidget {
                               color: AppColors.primaryRed,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text(
-                              'Recent News',
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: const Text('Recent News',
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                )),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -215,17 +220,17 @@ class HomeScreen extends ConsumerWidget {
                               Text(
                                 '${news.publishedAt.day}/${news.publishedAt.month}/${news.publishedAt.year}',
                                 style: const TextStyle(
-                                    color: AppColors.white70, fontSize: 11),
+                                    color: AppColors.white70,
+                                    fontSize: 11),
                               ),
                               const SizedBox(width: 12),
                               const Icon(Icons.remove_red_eye_outlined,
                                   size: 12, color: AppColors.white70),
                               const SizedBox(width: 4),
-                              Text(
-                                '${news.viewCount}',
-                                style: const TextStyle(
-                                    color: AppColors.white70, fontSize: 11),
-                              ),
+                              Text('${news.viewCount}',
+                                  style: const TextStyle(
+                                      color: AppColors.white70,
+                                      fontSize: 11)),
                             ],
                           ),
                         ],

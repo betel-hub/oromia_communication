@@ -8,7 +8,7 @@ import '../models/news.dart';
 class NewsCard extends StatelessWidget {
   final News news;
   final VoidCallback? onTap;
-  final bool isHorizontal; // For home screen horizontal scroll
+  final bool isHorizontal;
 
   const NewsCard({
     super.key,
@@ -19,13 +19,10 @@ class NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (isHorizontal) {
-      return _buildHorizontalCard(context);
-    }
-    return _buildListCard(context);
+    return isHorizontal ? _buildHorizontal() : _buildList();
   }
 
-  Widget _buildHorizontalCard(BuildContext context) {
+  Widget _buildHorizontal() {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -39,9 +36,9 @@ class NewsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
               child: CachedNetworkImage(
                 imageUrl: news.imageUrl,
                 height: 120,
@@ -59,7 +56,6 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Content
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -76,7 +72,7 @@ class NewsCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  _buildMetaRow(),
+                  _meta(),
                 ],
               ),
             ),
@@ -86,7 +82,7 @@ class NewsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildListCard(BuildContext context) {
+  Widget _buildList() {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: InkWell(
@@ -97,7 +93,6 @@ class NewsCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Thumbnail
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: CachedNetworkImage(
@@ -119,7 +114,6 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              // Content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +129,7 @@ class NewsCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    _buildMetaRow(),
+                    _meta(),
                   ],
                 ),
               ),
@@ -146,7 +140,7 @@ class NewsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetaRow() {
+  Widget _meta() {
     return Row(
       children: [
         const Icon(Icons.access_time, size: 12, color: AppColors.mediumGray),
