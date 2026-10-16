@@ -11,22 +11,44 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
+    final total = cart.fold<double>(0, (s, i) => s + i.subtotal);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Cart')),
+      appBar: AppBar(
+        title: const Text('Cart'),
+        actions: [
+          if (cart.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text('Clear cart?'),
+                    content: const Text('Remove all items?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          ref.read(cartProvider.notifier).clear();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Clear',
+                            style: TextStyle(color: AppColors.primaryRed)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: const Text('Clear',
+                  style: TextStyle(color: Colors.white)),
+            ),
+        ],
+      ),
       body: cart.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_cart_outlined,
-                      size: 64, color: AppColors.mediumGray),
-                  SizedBox(height: 16),
-                  Text('Your cart is empty',
-                      style: TextStyle(fontSize: 16, color: AppColors.darkGray)),
-                ],
-              ),
-            )
+          ? _buildEmpty(context)
           : Column(
               children: [
                 Expanded(
@@ -38,33 +60,61 @@ class CartScreen extends ConsumerWidget {
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 6),
-                        child: ListTile(
-                          title: Text(item.product.name,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 13)),
-                          subtitle: Text(
-                            'ETB ${item.product.price.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                                color: AppColors.primaryRed,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                onPressed: () => ref
-                                    .read(cartProvider.notifier)
-                                    .decrement(item.product.id),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.product.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      item.product.formattedPrice,
+                                      style: const TextStyle(
+                                        color: AppColors.primaryRed,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Text('${item.quantity}',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              IconButton(
-                                icon: const Icon(Icons.add_circle_outline),
-                                onPressed: () => ref
-                                    .read(cartProvider.notifier)
-                                    .increment(item.product.id),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.remove_circle_outline,
+                                        size: 22),
+                                    onPressed: () => ref
+                                        .read(cartProvider.notifier)
+                                        .decrement(item.product.id),
+                                  ),
+                                  Text(
+                                    '${item.quantity}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                        Icons.add_circle_outline,
+                                        size: 22),
+                                    onPressed: () => ref
+                                        .read(cartProvider.notifier)
+                                        .increment(item.product.id),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -73,43 +123,76 @@ class CartScreen extends ConsumerWidget {
                     },
                   ),
                 ),
-                // Total + Checkout
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                        top: BorderSide(color: AppColors.borderGray)),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Total:',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          Text(
-                            'ETB ${ref.read(cartProvider.notifier).total.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                                color: AppColors.primaryRed,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => context.push('/shop/checkout'),
-                          child: const Text('Proceed to Checkout'),
-                        ),
-                      ),
-                    ],
+                _buildCheckoutBar(context, ref, total, cart.length),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildEmpty(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.shopping_cart_outlined,
+              size: 80, color: AppColors.mediumGray),
+          const SizedBox(height: 16),
+          const Text('Your cart is empty',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 8),
+          const Text('Add products to get started',
+              style: TextStyle(color: AppColors.mediumGray)),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => context.pop(),
+            icon: const Icon(Icons.shopping_bag),
+            label: const Text('Browse Shop'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckoutBar(BuildContext context, WidgetRef ref, double total,
+      int itemCount) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.borderGray)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('$itemCount items',
+                    style:
+                        const TextStyle(color: AppColors.mediumGray)),
+                Text(
+                  'Total: ${total.toStringAsFixed(0)} ETB',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryRed,
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () => context.push('/shop/checkout'),
+                child: const Text('Proceed to Checkout'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

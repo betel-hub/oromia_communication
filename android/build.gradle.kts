@@ -15,6 +15,17 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
+// 🔽 ADDED — force all plugins (screen_protector, etc.) to use a modern compileSdk
+subprojects {
+    afterEvaluate {
+        extensions.findByName("android")?.let { ext ->
+            val androidExt = ext as com.android.build.gradle.BaseExtension
+            androidExt.compileSdkVersion(36)
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

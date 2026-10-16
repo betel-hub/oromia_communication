@@ -8,10 +8,10 @@ final shopRepositoryProvider = Provider<ShopRepository>((ref) {
 });
 
 final productsProvider = FutureProvider<List<Product>>((ref) async {
-  return ref.watch(shopRepositoryProvider).getProducts();
+  return ref.watch(shopRepositoryProvider).list();
 });
 
-// Cart state
+// ============ CART ============
 final cartProvider =
     StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
   return CartNotifier();
@@ -31,11 +31,11 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     }
   }
 
-  void remove(int productId) {
+  void remove(String productId) {
     state = state.where((i) => i.product.id != productId).toList();
   }
 
-  void increment(int productId) {
+  void increment(String productId) {
     state = state.map((i) {
       if (i.product.id == productId) {
         i.quantity++;
@@ -44,7 +44,7 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     }).toList();
   }
 
-  void decrement(int productId) {
+  void decrement(String productId) {
     state = state
         .map((i) {
           if (i.product.id == productId && i.quantity > 1) {
@@ -59,4 +59,5 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   void clear() => state = [];
 
   double get total => state.fold(0.0, (s, i) => s + i.subtotal);
+  int get itemCount => state.fold(0, (s, i) => s + i.quantity);
 }

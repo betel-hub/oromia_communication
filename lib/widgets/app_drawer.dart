@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../core/theme/app_colors.dart';
 import '../models/news_category.dart';
 
@@ -9,6 +10,8 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Drawer(
       child: Container(
         color: AppColors.primaryBlue,
@@ -34,9 +37,9 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Oromia Communication\nBureau',
-                    style: TextStyle(
+                  Text(
+                    t.appName,
+                    style: const TextStyle(
                       color: AppColors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -54,7 +57,7 @@ class AppDrawer extends StatelessWidget {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    _buildItem(context, Icons.home, 'Home', () {
+                    _buildItem(context, Icons.home, t.home, () {
                       Navigator.pop(context);
                       context.go('/home');
                     }),
@@ -63,9 +66,9 @@ class AppDrawer extends StatelessWidget {
                     ExpansionTile(
                       leading: const Icon(Icons.circle,
                           size: 8, color: AppColors.primaryRed),
-                      title: const Text(
-                        'News',
-                        style: TextStyle(
+                      title: Text(
+                        t.news,
+                        style: const TextStyle(
                             color: AppColors.white, fontSize: 15),
                       ),
                       iconColor: AppColors.white,
@@ -98,7 +101,7 @@ class AppDrawer extends StatelessWidget {
                     ),
 
                     // ------- TENDERS -------
-                    _buildItem(context, Icons.gavel, 'Tenders', () {
+                    _buildItem(context, Icons.gavel, t.tenders, () {
                       Navigator.pop(context);
                       context.push('/tenders');
                     }),
@@ -107,8 +110,8 @@ class AppDrawer extends StatelessWidget {
                     ExpansionTile(
                       leading: const Icon(Icons.circle,
                           size: 8, color: AppColors.primaryRed),
-                      title: const Text('Government',
-                          style: TextStyle(
+                      title: Text(t.government,
+                          style: const TextStyle(
                               color: AppColors.white, fontSize: 15)),
                       iconColor: AppColors.white,
                       collapsedIconColor: AppColors.white,
@@ -137,8 +140,8 @@ class AppDrawer extends StatelessWidget {
                     ExpansionTile(
                       leading: const Icon(Icons.circle,
                           size: 8, color: AppColors.primaryRed),
-                      title: const Text('Media',
-                          style: TextStyle(
+                      title: Text(t.media,
+                          style: const TextStyle(
                               color: AppColors.white, fontSize: 15)),
                       iconColor: AppColors.white,
                       collapsedIconColor: AppColors.white,
@@ -177,8 +180,8 @@ class AppDrawer extends StatelessWidget {
                     ExpansionTile(
                       leading: const Icon(Icons.circle,
                           size: 8, color: AppColors.primaryRed),
-                      title: const Text('Kallacha Oromia',
-                          style: TextStyle(
+                      title: Text(t.kallachaOromia,
+                          style: const TextStyle(
                               color: AppColors.white, fontSize: 15)),
                       iconColor: AppColors.white,
                       collapsedIconColor: AppColors.white,
@@ -219,13 +222,19 @@ class AppDrawer extends StatelessWidget {
                     ),
 
                     // ------- SHOP -------
-                    _buildItem(context, Icons.shopping_bag, 'Shop', () {
+                    _buildItem(context, Icons.shopping_bag, t.shop, () {
                       Navigator.pop(context);
                       context.push('/shop');
                     }),
 
+                    // ------- AI ASSISTANT -------
+                    _buildItem(context, Icons.smart_toy, 'AI Assistant', () {
+                      Navigator.pop(context);
+                      context.push('/ai');
+                    }),
+
                     // ------- ABOUT -------
-                    _buildItem(context, Icons.info_outline, 'About', () {
+                    _buildItem(context, Icons.info_outline, t.about, () {
                       Navigator.pop(context);
                       context.push('/about');
                     }),
@@ -233,7 +242,7 @@ class AppDrawer extends StatelessWidget {
                     const Divider(color: AppColors.white24),
 
                     // ------- LANGUAGE -------
-                    _buildItem(context, Icons.language, 'Language', () {
+                    _buildItem(context, Icons.language, t.language, () {
                       Navigator.pop(context);
                       context.push('/language');
                     }),
@@ -243,11 +252,11 @@ class AppDrawer extends StatelessWidget {
             ),
 
             // ============ FOOTER ============
-            Container(
+            Padding(
               padding: const EdgeInsets.all(16),
-              child: const Text(
-                '© 2026 Oromia Communication Bureau',
-                style: TextStyle(
+              child: Text(
+                t.copyright,
+                style: const TextStyle(
                   color: AppColors.white54,
                   fontSize: 11,
                 ),

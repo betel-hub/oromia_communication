@@ -1,253 +1,248 @@
-import 'dart:convert';
-import 'dart:math';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
 
+import '../core/network/api_client.dart';
 import '../models/user.dart';
 
+/// Thrown when an auth operation fails. Message is human-readable.
+class AuthException implements Exception {
+  final String message;
+  final int? statusCode;
+  AuthException(this.message, {this.statusCode});
+
+  @override
+  String toString() => message;
+}
+
 class AuthRepository {
-  static const _usersKey = 'registered_users';
-  static const _sessionKey = 'current_user_email';
-  static const _tokenKey = 'access_token';
-  static const _otpKey = 'pending_otp';
-  static const _otpEmailKey = 'pending_otp_email';
-  static const _otpExpiryKey = 'pending_otp_expiry';
+  final ApiClient _client = ApiClient();
 
-  // ==================== HELPERS ====================
+  // ==================== REGISTER ====================
 
-  Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
-
-  /// Load all registered users (persisted in SharedPreferences)
-  Future<Map<String, Map<String, dynamic>>> _loadUsers() async {
-    final prefs = await _prefs;
-    final raw = prefs.getString(_usersKey);
-    if (raw == null) return {};
-    final Map<String, dynamic> decoded = json.decode(raw);
-    return decoded.map(
-        (k, v) => MapEntry(k, Map<String, dynamic>.from(v)));
-  }
-
-  Future<void> _saveUsers(Map<String, Map<String, dynamic>> users) async {
-    final prefs = await _prefs;
-    await prefs.setString(_usersKey, json.encode(users));
-  }
-
-  /// Generate 6-digit OTP
-  String _generateOtp() {
-    final rnd = Random();
-    return (100000 + rnd.nextInt(900000)).toString();
-  }
-
-  // ==================== REGISTRATION ====================
-
-  /// Step 1: Start registration — creates pending user + OTP
-  /// Returns the OTP (in real app, this would be sent via email)
-  Future<String> startRegistration({
+  /// Step 1: Create a pending account.
+  /// Returns null (OTP is delivered by email/SMS, not by the API).
+  ///
+  /// Throws [AuthException] on failure (duplicate email, bad phone, etc).
+  Future<String?> startRegistration({
     required String name,
     required String email,
     required String password,
     String? phone,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    final users = await _loadUsers();
-    final key = email.toLowerCase();
-
-    if (users.containsKey(key)) {
-      throw Exception('Email already registered. Please login.');
+    try {
+      final res = await _client.dio.post<Map<String, dynamic>>(
+        'auth/register',
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          if (phone != null && phone.isNotEmpty) 'phone': phone,
+        },
+      );
+      _ensureSuccess(res);
+      return null;
+    } on DioException catch (e) {
+      throw _mapError(e);
     }
-
-    // Create pending user (unverified)
-    users[key] = {
-      'id': users.length + 1,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'password': password, // 🔒 In real app: hash this
-      'type': 'public_user',
-      'is_verified': false,
-      'created_at': DateTime.now().toIso8601String(),
-    };
-    await _saveUsers(users);
-
-    // Generate OTP
-    final otp = _generateOtp();
-    final prefs = await _prefs;
-    await prefs.setString(_otpKey, otp);
-    await prefs.setString(_otpEmailKey, key);
-    await prefs.setInt(
-      _otpExpiryKey,
-      DateTime.now().add(const Duration(minutes: 10)).millisecondsSinceEpoch,
-    );
-
-    // In a real app: send OTP via backend API call here
-    // await _api.post('/auth/send-otp', {'email': email, 'otp': otp});
-
-    return otp;
   }
 
-  /// Step 2: Verify OTP — activates the account
+  /// Step 2: Verify the phone (or email) OTP. On success, user is logged in.
   Future<User> verifyOtp(String otp) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    final prefs = await _prefs;
-    final storedOtp = prefs.getString(_otpKey);
-    final pendingEmail = prefs.getString(_otpEmailKey);
-    final expiry = prefs.getInt(_otpExpiryKey);
-
-    if (storedOtp == null || pendingEmail == null) {
-      throw Exception('No pending verification');
+    try {
+      final res = await _client.dio.post<Map<String, dynamic>>(
+        'auth/verify-phone',
+        data: {'code': otp},
+      );
+      _ensureSuccess(res);
+      return await _persistTokensAndFetchUser(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
     }
-
-    if (expiry != null && DateTime.now().millisecondsSinceEpoch > expiry) {
-      throw Exception('OTP expired. Please request a new one.');
-    }
-
-    if (otp.trim() != storedOtp) {
-      throw Exception('Invalid OTP. Please try again.');
-    }
-
-    // Mark user verified
-    final users = await _loadUsers();
-    final userData = users[pendingEmail];
-    if (userData == null) throw Exception('User not found');
-
-    userData['is_verified'] = true;
-    users[pendingEmail] = userData;
-    await _saveUsers(users);
-
-    // Clear OTP
-    await prefs.remove(_otpKey);
-    await prefs.remove(_otpEmailKey);
-    await prefs.remove(_otpExpiryKey);
-
-    // Log the user in
-    await prefs.setString(_sessionKey, pendingEmail);
-    await prefs.setString(_tokenKey, 'token_${userData['id']}');
-
-    return User.fromJson(userData);
   }
 
-  /// Resend OTP
-  Future<String> resendOtp() async {
-    final prefs = await _prefs;
-    final pendingEmail = prefs.getString(_otpEmailKey);
-    if (pendingEmail == null) throw Exception('No pending verification');
-
-    final otp = _generateOtp();
-    await prefs.setString(_otpKey, otp);
-    await prefs.setInt(
-      _otpExpiryKey,
-      DateTime.now().add(const Duration(minutes: 10)).millisecondsSinceEpoch,
-    );
-    return otp;
+  /// Resend the OTP. Returns null (no dev OTP).
+  Future<String?> resendOtp() async {
+    try {
+      final res = await _client.dio.post<Map<String, dynamic>>(
+        'auth/send-phone-otp',
+      );
+      _ensureSuccess(res);
+      return null;
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
   }
 
   // ==================== LOGIN ====================
 
-  Future<User> login(String email, String password) async {
-    await Future.delayed(const Duration(milliseconds: 600));
+  /// Log in with email+password or phone+password.
+  /// If [email] looks like a phone number, sends it as `phone`.
+  Future<User> login(String identifier, String password) async {
+    try {
+      final isPhone = _looksLikePhone(identifier);
+      final body = <String, dynamic>{
+        if (isPhone) 'phone': identifier else 'email': identifier,
+        'password': password,
+      };
 
-    final users = await _loadUsers();
-    final key = email.toLowerCase();
-    final userData = users[key];
-
-    if (userData == null) {
-      throw Exception('No account found for this email. Please register.');
+      final res = await _client.dio.post<Map<String, dynamic>>(
+        'auth/login',
+        data: body,
+      );
+      _ensureSuccess(res);
+      return await _persistTokensAndFetchUser(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
     }
-    if (userData['password'] != password) {
-      throw Exception('Incorrect password');
-    }
-    if (userData['is_verified'] != true) {
-      throw Exception('Account not verified. Please verify with OTP.');
-    }
-
-    final prefs = await _prefs;
-    await prefs.setString(_sessionKey, key);
-    await prefs.setString(_tokenKey, 'token_${userData['id']}');
-
-    return User.fromJson(userData);
   }
 
   // ==================== SESSION ====================
 
+  /// Load the current user from `/auth/me` if a token exists.
+  /// Returns null if not logged in or if the call fails (safe for splash).
   Future<User?> getCurrentUser() async {
-    final prefs = await _prefs;
-    final email = prefs.getString(_sessionKey);
-    if (email == null) return null;
-
-    final users = await _loadUsers();
-    final userData = users[email];
-    if (userData == null) return null;
-
-    return User.fromJson(userData);
+    if (!await _client.isLoggedIn) return null;
+    try {
+      final res = await _client.dio.get<Map<String, dynamic>>('auth/me');
+      if (res.data?['success'] != true) return null;
+      final data = res.data?['data'];
+      if (data is Map<String, dynamic>) {
+        return User.fromJson(data);
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
-  Future<bool> isLoggedIn() async {
-    final prefs = await _prefs;
-    return prefs.getString(_sessionKey) != null;
-  }
+  Future<bool> isLoggedIn() => _client.isLoggedIn;
 
   Future<void> logout() async {
-    final prefs = await _prefs;
-    await prefs.remove(_sessionKey);
-    await prefs.remove(_tokenKey);
+    // Best-effort server-side revoke; local wipe always happens.
+    try {
+      final refresh = await _client.getRefreshToken();
+      if (refresh != null && refresh.isNotEmpty) {
+        await _client.dio.post(
+          'auth/logout',
+          data: {'refresh_token': refresh},
+        );
+      }
+    } catch (_) {
+      // Ignore — we still clear locally.
+    } finally {
+      await _client.clearTokens();
+    }
   }
 
   // ==================== FORGOT PASSWORD ====================
 
-  /// Step 1: Request password reset OTP
-  Future<String> requestPasswordReset(String email) async {
-    await Future.delayed(const Duration(milliseconds: 600));
+  /// Request a reset link/OTP. Always succeeds (no account enumeration).
+  /// Returns null (no dev OTP).
+  Future<String?> requestPasswordReset(String identifier) async {
+    try {
+      final isPhone = _looksLikePhone(identifier);
+      final body = isPhone ? {'phone': identifier} : {'email': identifier};
 
-    final users = await _loadUsers();
-    final key = email.toLowerCase();
-    if (!users.containsKey(key)) {
-      // Don't leak whether email exists — still return OTP
-      return _generateOtp();
+      final res = await _client.dio.post<Map<String, dynamic>>(
+        'auth/forgot-password',
+        data: body,
+      );
+      _ensureSuccess(res);
+      return null;
+    } on DioException catch (e) {
+      throw _mapError(e);
     }
-
-    final otp = _generateOtp();
-    final prefs = await _prefs;
-    await prefs.setString(_otpKey, otp);
-    await prefs.setString(_otpEmailKey, key);
-    await prefs.setInt(
-      _otpExpiryKey,
-      DateTime.now().add(const Duration(minutes: 10)).millisecondsSinceEpoch,
-    );
-
-    // In real app: send OTP via email
-    return otp;
   }
 
-  /// Step 2: Reset password using OTP
+  /// Complete the reset using the OTP from the email/SMS link.
   Future<void> resetPassword({
     required String email,
     required String otp,
     required String newPassword,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    final prefs = await _prefs;
-    final storedOtp = prefs.getString(_otpKey);
-    final pendingEmail = prefs.getString(_otpEmailKey);
-
-    if (storedOtp == null || pendingEmail != email.toLowerCase()) {
-      throw Exception('No pending password reset');
+    try {
+      // The reset link typically embeds a token; using the OTP as the token
+      // matches your server's `/auth/forgot-password` contract.
+      final res = await _client.dio.post<Map<String, dynamic>>(
+        'auth/forgot-password/reset',
+        data: {
+          'email': email,
+          'token': otp,
+          'password': newPassword,
+        },
+      );
+      _ensureSuccess(res);
+    } on DioException catch (e) {
+      throw _mapError(e);
     }
-    if (otp.trim() != storedOtp) {
-      throw Exception('Invalid OTP');
+  }
+
+  // ==================== HELPERS ====================
+
+  /// Persist tokens from a login/refresh response and fetch the profile.
+  Future<User> _persistTokensAndFetchUser(Map<String, dynamic> envelope) async {
+    final data = envelope['data'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw AuthException('Server returned no user data.');
     }
 
-    final users = await _loadUsers();
-    final userData = users[email.toLowerCase()];
-    if (userData == null) throw Exception('User not found');
+    final access = data['access_token'] as String?;
+    final refresh = data['refresh_token'] as String?;
+    if (access == null || refresh == null) {
+      throw AuthException('Server returned no tokens.');
+    }
 
-    userData['password'] = newPassword;
-    users[email.toLowerCase()] = userData;
-    await _saveUsers(users);
+    await _client.setTokens(accessToken: access, refreshToken: refresh);
 
-    await prefs.remove(_otpKey);
-    await prefs.remove(_otpEmailKey);
-    await prefs.remove(_otpExpiryKey);
+    // The login response already includes `user`; use it directly if present.
+    final userJson = data['user'];
+    if (userJson is Map<String, dynamic>) {
+      return User.fromJson(userJson);
+    }
+
+    // Fallback to `/auth/me` if the response shape ever changes.
+    final me = await getCurrentUser();
+    if (me == null) {
+      throw AuthException('Logged in but could not load profile.');
+    }
+    return me;
+  }
+
+  void _ensureSuccess(Response<Map<String, dynamic>> res) {
+    if (res.data?['success'] != true) {
+      final msg = res.data?['message']?.toString() ?? 'Request failed.';
+      throw AuthException(msg, statusCode: res.statusCode);
+    }
+  }
+
+  AuthException _mapError(DioException e) {
+    final status = e.response?.statusCode;
+    final body = e.response?.data;
+
+    String msg = 'Connection error. Check your internet and try again.';
+    if (body is Map && body['message'] is String) {
+      msg = body['message'] as String;
+    } else if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      msg = 'Request timed out. Please try again.';
+    } else if (status == 401) {
+      msg = 'Invalid credentials.';
+    } else if (status == 409) {
+      msg = 'That email or phone is already registered.';
+    } else if (status == 422) {
+      msg = 'Please check the information you entered.';
+    } else if (status == 429) {
+      msg = 'Too many attempts. Please wait and try again.';
+    } else if (status != null && status >= 500) {
+      msg = 'Server error. Please try again later.';
+    }
+    return AuthException(msg, statusCode: status);
+  }
+
+  bool _looksLikePhone(String s) {
+    final trimmed = s.trim();
+    if (trimmed.isEmpty) return false;
+    // Ethiopian numbers: +2519…, 09…, 07…, or digits-only.
+    if (trimmed.startsWith('+')) return true;
+    return RegExp(r'^[0-9]{9,15}$').hasMatch(trimmed);
   }
 }

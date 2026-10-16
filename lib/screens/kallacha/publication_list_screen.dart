@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../models/publication.dart';
+import '../../models/publication_type.dart';
 import '../../providers/publication_provider.dart';
 
 class PublicationListScreen extends ConsumerStatefulWidget {
@@ -26,10 +27,18 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
     final pubAsync = ref.watch(publicationListProvider(widget.type.slug));
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.type.displayName)),
+      appBar: AppBar(
+        title: Text(widget.type.displayName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () =>
+                ref.invalidate(publicationListProvider(widget.type.slug)),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          // Archive filter chips
           if (widget.type == PublicationType.archive) _buildArchiveFilters(),
           Expanded(
             child: pubAsync.when(
@@ -40,27 +49,30 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
                         : items.where((p) => p.type == _archiveFilter).toList())
                     : items;
 
-                if (filtered.isEmpty) {
-                  return const Center(child: Text('No publications available'));
-                }
-                return GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.55,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, i) {
-                    final pub = filtered[i];
-                    return _buildPublicationCard(context, pub);
-                  },
-                );
+                if (filtered.isEmpty) return _buildEmptyState();
+                return _buildGrid(filtered);
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
+              error: (err, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          size: 60, color: AppColors.error),
+                      const SizedBox(height: 16),
+                      Text('Error: $err', textAlign: TextAlign.center),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => ref
+                            .invalidate(publicationListProvider(widget.type.slug)),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -72,13 +84,13 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
     const filters = [
       {'value': 'all', 'label': 'All'},
       {'value': 'weekly', 'label': 'Weekly'},
-      {'value': 'quarterly', 'label': 'Quarterly'},
+      {'value': 'monthly', 'label': 'Quarterly'},
       {'value': 'yearly', 'label': 'Yearly'},
       {'value': 'brochure', 'label': 'Brochure'},
     ];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Row(
         children: filters.map((f) {
           final selected = _archiveFilter == f['value'];
@@ -87,15 +99,14 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
             child: FilterChip(
               label: Text(f['label']!),
               selected: selected,
-              onSelected: (_) {
-                setState(() => _archiveFilter = f['value']!);
-              },
+              onSelected: (_) => setState(() => _archiveFilter = f['value']!),
               backgroundColor: AppColors.lightGray,
-              selectedColor: AppColors.primaryBlue.withValues(alpha: 0.2),
+              selectedColor: AppColors.primaryBlue.withValues(alpha: 0.15),
               checkmarkColor: AppColors.primaryBlue,
               labelStyle: TextStyle(
                 color: selected ? AppColors.primaryBlue : AppColors.black,
                 fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 13,
               ),
             ),
           );
@@ -104,17 +115,32 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
     );
   }
 
-  Widget _buildPublicationCard(BuildContext context, Publication pub) {
+  Widget _buildGrid(List<Publication> items) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.58,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, i) => _buildCoverCard(items[i]),
+    );
+  }
+
+  Widget _buildCoverCard(Publication pub) {
     return GestureDetector(
-      onTap: () {
-        context.push('/kallacha/reader/${pub.id}');
-      },
+      onTap: () => context.push('/kallacha/reader/${pub.id}?type=${pub.type}'),
       child: Card(
+        elevation: 2,
         clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cover
             Expanded(
               child: Stack(
                 fit: StackFit.expand,
@@ -124,11 +150,13 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: AppColors.lightGray,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: const Center(
+                          child: CircularProgressIndicator()),
                     ),
                     errorWidget: (context, url, error) => Container(
                       color: AppColors.lightGray,
-                      child: const Icon(Icons.book, size: 48),
+                      child: const Icon(Icons.book,
+                          size: 48, color: AppColors.mediumGray),
                     ),
                   ),
                   if (pub.issueNumber != null)
@@ -137,13 +165,13 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
                       right: 6,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: AppColors.primaryRed,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          '#${pub.issueNumber}',
+                          'Issue ${pub.issueNumber}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -152,12 +180,30 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
                         ),
                       ),
                     ),
+                  Positioned(
+                    bottom: 6,
+                    left: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '${pub.pageCount} pages',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            // Info
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -165,32 +211,34 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
                     pub.title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 13,
+                      height: 1.3,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (pub.subtitle != null) ...[
-                    const SizedBox(height: 2),
+                  if (pub.subtitle != null && pub.subtitle!.isNotEmpty) ...[
+                    const SizedBox(height: 3),
                     Text(
                       pub.subtitle!,
                       style: const TextStyle(
-                          fontSize: 10, color: AppColors.mediumGray),
+                          fontSize: 11, color: AppColors.mediumGray),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       const Icon(Icons.access_time,
                           size: 10, color: AppColors.primaryRed),
                       const SizedBox(width: 3),
-                      Text(
-                        DateFormat('MMM yyyy').format(pub.publishedAt),
-                        style: const TextStyle(
-                            fontSize: 9, color: AppColors.mediumGray),
-                      ),
+                      if (pub.publishedAt != null)
+                        Text(
+                          DateFormat('MMM yyyy').format(pub.publishedAt!),
+                          style: const TextStyle(
+                              fontSize: 10, color: AppColors.mediumGray),
+                        ),
                     ],
                   ),
                 ],
@@ -198,6 +246,25 @@ class _PublicationListScreenState extends ConsumerState<PublicationListScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(widget.type.icon,
+              size: 64, color: AppColors.mediumGray),
+          const SizedBox(height: 16),
+          Text('No ${widget.type.displayName} available',
+              style: const TextStyle(fontSize: 15)),
+          const SizedBox(height: 8),
+          const Text('Check back later',
+              style: TextStyle(
+                  color: AppColors.mediumGray, fontSize: 12)),
+        ],
       ),
     );
   }

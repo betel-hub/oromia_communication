@@ -42,7 +42,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    final otp = await ref.read(authStateProvider.notifier).startRegistration(
+    await ref.read(authStateProvider.notifier).startRegistration(
           name: _nameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
           password: _passwordCtrl.text,
@@ -51,58 +51,46 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               : _phoneCtrl.text.trim(),
         );
 
-    if (otp != null && mounted) {
-      setState(() => _otpSent = true);
-      _showOtpDialog(otp);
+    if (!mounted) return;
+
+    final authState = ref.read(authStateProvider);
+    if (authState.error != null) {
+      // Provider already set an error message.
+      return;
     }
+
+    // Success — move to OTP step. The OTP arrives by email/SMS.
+    setState(() => _otpSent = true);
+    _showOtpSentDialog();
   }
 
-  void _showOtpDialog(String otp) {
-    // For development — in production this would be sent via email
+  void _showOtpSentDialog() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.info_outline, color: AppColors.warning),
+            Icon(Icons.mark_email_read, color: AppColors.primaryBlue),
             SizedBox(width: 8),
-            Text('Dev Mode'),
+            Text('Check your inbox'),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'In production, this OTP will be sent to your email.',
-              style: TextStyle(fontSize: 13),
+            Text(
+              'We sent a 6-digit code to:\n${_emailCtrl.text.trim()}',
+              style: const TextStyle(fontSize: 14),
             ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+            if (_phoneCtrl.text.trim().isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                'and to ${_phoneCtrl.text.trim()}',
+                style: const TextStyle(
+                    fontSize: 13, color: AppColors.mediumGray),
               ),
-              child: Column(
-                children: [
-                  const Text('Your OTP:',
-                      style: TextStyle(
-                          fontSize: 12, color: AppColors.mediumGray)),
-                  const SizedBox(height: 6),
-                  Text(
-                    otp,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 4,
-                      color: AppColors.primaryBlue,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ],
         ),
         actions: [
@@ -122,8 +110,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    final success =
-        await ref.read(authStateProvider.notifier).verifyOtp(otp);
+    final success = await ref.read(authStateProvider.notifier).verifyOtp(otp);
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,11 +124,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _resendOtp() async {
-    final otp = await ref.read(authStateProvider.notifier).resendOtp();
-    if (otp != null && mounted) {
-      _showOtpDialog(otp);
+    final ok = await ref.read(authStateProvider.notifier).resendOtp();
+    if (ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('New OTP sent!')),
+        const SnackBar(content: Text('New code sent!')),
       );
     }
   }
@@ -162,7 +148,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
-        child: _otpSent ? _buildOtpStep(authState) : _buildRegisterStep(authState),
+        child: _otpSent
+            ? _buildOtpStep(authState)
+            : _buildRegisterStep(authState),
       ),
     );
   }
@@ -332,12 +320,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         const Icon(Icons.mark_email_read,
             size: 80, color: AppColors.primaryBlue),
         const SizedBox(height: 20),
-        const Text('Verify Your Email',
+        const Text('Verify Your Account',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         Text(
-          'We sent a 6-digit code to\n${authState.pendingEmail}',
+          'We sent a 6-digit code to\n${authState.pendingEmail ?? _emailCtrl.text.trim()}',
           textAlign: TextAlign.center,
           style: const TextStyle(color: AppColors.mediumGray),
         ),

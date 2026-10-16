@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+
 import '../core/network/api_client.dart';
 import '../models/news.dart';
 
@@ -13,20 +15,23 @@ class NewsRepository {
         queryParameters: {'page': page, 'limit': limit},
       );
 
-      if (response.data['success'] == true) {
-        final items = response.data['data']['items'] as List<dynamic>;
-        return items.map((j) => News.fromJson(j)).toList();
-      }
+      final items = _extractList(response.data);
+      if (items == null) return [];
+
+      return items
+          .whereType<Map>()
+          .map((j) => News.fromJson(Map<String, dynamic>.from(j)))
+          .toList();
+    } on DioException catch (e) {
+      debugPrint('Error loading news: ${e.message}');
       return [];
     } catch (e) {
-      debugPrint('Error loading news: $e');
+      debugPrint('Error parsing news: $e');
       return [];
     }
   }
 
   // ============ BY CATEGORY ============
-  // TODO: Backend does not yet support category filter.
-  // Currently returns all news. Update when backend is fixed.
   Future<List<News>> getByCategory(
     String slug, {
     int page = 1,
@@ -38,17 +43,22 @@ class NewsRepository {
         queryParameters: {
           'page': page,
           'limit': limit,
-          'category': slug == 'all' ? null : slug,
+          if (slug != 'all') 'category': slug,
         },
       );
 
-      if (response.data['success'] == true) {
-        final items = response.data['data']['items'] as List<dynamic>;
-        return items.map((j) => News.fromJson(j)).toList();
-      }
+      final items = _extractList(response.data);
+      if (items == null) return [];
+
+      return items
+          .whereType<Map>()
+          .map((j) => News.fromJson(Map<String, dynamic>.from(j)))
+          .toList();
+    } on DioException catch (e) {
+      debugPrint('Error loading category news: ${e.message}');
       return [];
     } catch (e) {
-      debugPrint('Error loading category news: $e');
+      debugPrint('Error parsing category news: $e');
       return [];
     }
   }
@@ -63,12 +73,14 @@ class NewsRepository {
   Future<News?> getById(String id) async {
     try {
       final response = await _client.dio.get('news/$id');
-      if (response.data['success'] == true) {
-        return News.fromJson(response.data['data']);
-      }
+      final data = _extractData(response.data);
+      if (data == null) return null;
+      return News.fromJson(data);
+    } on DioException catch (e) {
+      debugPrint('Error loading news detail: ${e.message}');
       return null;
     } catch (e) {
-      debugPrint('Error loading news detail: $e');
+      debugPrint('Error parsing news detail: $e');
       return null;
     }
   }
@@ -80,21 +92,51 @@ class NewsRepository {
   }
 
   // ============ SEARCH ============
-  Future<List<Map<String, dynamic>>> search(String query,
-      {String lang = 'en'}) async {
+  Future<List<Map<String, dynamic>>> search(
+    String query, {
+    String lang = 'en',
+  }) async {
     try {
       final response = await _client.dio.get(
         'search',
         queryParameters: {'q': query, 'lang': lang, 'limit': 20},
       );
-      if (response.data['success'] == true) {
-        return List<Map<String, dynamic>>.from(
-            response.data['data']['items'] ?? []);
-      }
+
+      final items = _extractList(response.data);
+      if (items == null) return [];
+
+      return items
+          .whereType<Map>()
+          .map((j) => Map<String, dynamic>.from(j))
+          .toList();
+    } on DioException catch (e) {
+      debugPrint('Error searching: ${e.message}');
       return [];
     } catch (e) {
-      debugPrint('Error searching: $e');
+      debugPrint('Error parsing search: $e');
       return [];
     }
+  }
+
+  // ==================== ENVELOPE HELPERS ====================
+
+  List<dynamic>? _extractList(dynamic body) {
+    if (body is! Map) return null;
+    if (body['success'] != true) return null;
+    final data = body['data'];
+    if (data is List) return data;
+    if (data is Map) {
+      if (data['items'] is List) return data['items'] as List;
+      if (data['data'] is List) return data['data'] as List;
+    }
+    return null;
+  }
+
+  Map<String, dynamic>? _extractData(dynamic body) {
+    if (body is! Map) return null;
+    if (body['success'] != true) return null;
+    final data = body['data'];
+    if (data is Map) return Map<String, dynamic>.from(data);
+    return null;
   }
 }

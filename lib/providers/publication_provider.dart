@@ -8,6 +8,6 @@ final publicationRepositoryProvider = Provider<PublicationRepository>((ref) {
 });
 
 final publicationListProvider =
-    FutureProvider.family<List<Publication>, String>((ref, slug) async {
-  return ref.watch(publicationRepositoryProvider).getByType(slug);
+    FutureProvider.family<List<Publication>, String>((ref, type) async {
+  return ref.watch(publicationRepositoryProvider).catalog(type: type);
 });

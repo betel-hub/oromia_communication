@@ -27,7 +27,9 @@ class LanguageScreen extends ConsumerWidget {
           final selected = current.languageCode == lang['code'];
           return Card(
             margin: const EdgeInsets.only(bottom: 10),
-            color: selected ? AppColors.primaryBlue.withValues(alpha: 0.08) : null,
+            color: selected
+                ? AppColors.primaryBlue.withValues(alpha: 0.08)
+                : null,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: BorderSide(
@@ -45,7 +47,9 @@ class LanguageScreen extends ConsumerWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: selected ? AppColors.primaryBlue : AppColors.black,
+                  color: selected
+                      ? AppColors.primaryBlue
+                      : AppColors.black,
                 ),
               ),
               subtitle: Text(lang['name']!),
@@ -54,11 +58,15 @@ class LanguageScreen extends ConsumerWidget {
                       color: AppColors.primaryBlue)
                   : null,
               onTap: () {
-                ref.read(languageProvider.notifier).setLanguage(lang['code']!);
+                ref
+                    .read(languageProvider.notifier)
+                    .setLanguage(lang['code']!);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Language set to ${lang['name']}'),
+                    content: Text(
+                        'Language set to ${lang['name']}'),
                     duration: const Duration(seconds: 1),
+                    backgroundColor: AppColors.success,
                   ),
                 );
                 Future.delayed(const Duration(seconds: 1), () {

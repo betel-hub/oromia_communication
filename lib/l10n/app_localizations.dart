@@ -120,78 +120,6 @@ abstract class AppLocalizations {
   /// **'Select Language'**
   String get languageSelect;
 
-  /// No description provided for @continueButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get continueButton;
-
-  /// No description provided for @login.
-  ///
-  /// In en, this message translates to:
-  /// **'Login'**
-  String get login;
-
-  /// No description provided for @signUp.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Up'**
-  String get signUp;
-
-  /// No description provided for @logout.
-  ///
-  /// In en, this message translates to:
-  /// **'Logout'**
-  String get logout;
-
-  /// No description provided for @username.
-  ///
-  /// In en, this message translates to:
-  /// **'Username'**
-  String get username;
-
-  /// No description provided for @password.
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get password;
-
-  /// No description provided for @email.
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get email;
-
-  /// No description provided for @confirmPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Password'**
-  String get confirmPassword;
-
-  /// No description provided for @continueAsGuest.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue as Guest'**
-  String get continueAsGuest;
-
-  /// No description provided for @forgotPassword.
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot Password?'**
-  String get forgotPassword;
-
-  /// No description provided for @dontHaveAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Don\'t have an account?'**
-  String get dontHaveAccount;
-
-  /// No description provided for @alreadyHaveAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account?'**
-  String get alreadyHaveAccount;
-
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -252,185 +180,41 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
-  /// No description provided for @politics.
+  /// No description provided for @login.
   ///
   /// In en, this message translates to:
-  /// **'Politics'**
-  String get politics;
+  /// **'Login'**
+  String get login;
 
-  /// No description provided for @social.
+  /// No description provided for @signUp.
   ///
   /// In en, this message translates to:
-  /// **'Social'**
-  String get social;
+  /// **'Sign Up'**
+  String get signUp;
 
-  /// No description provided for @economy.
+  /// No description provided for @continueAsGuest.
   ///
   /// In en, this message translates to:
-  /// **'Economy'**
-  String get economy;
+  /// **'Continue as Guest'**
+  String get continueAsGuest;
 
-  /// No description provided for @sport.
+  /// No description provided for @username.
   ///
   /// In en, this message translates to:
-  /// **'Sport'**
-  String get sport;
+  /// **'Username'**
+  String get username;
 
-  /// No description provided for @technology.
+  /// No description provided for @password.
   ///
   /// In en, this message translates to:
-  /// **'Technology'**
-  String get technology;
+  /// **'Password'**
+  String get password;
 
-  /// No description provided for @environment.
+  /// No description provided for @email.
   ///
   /// In en, this message translates to:
-  /// **'Environment'**
-  String get environment;
-
-  /// No description provided for @features.
-  ///
-  /// In en, this message translates to:
-  /// **'Features'**
-  String get features;
-
-  /// No description provided for @pressRelease.
-  ///
-  /// In en, this message translates to:
-  /// **'Press Release'**
-  String get pressRelease;
-
-  /// No description provided for @documentary.
-  ///
-  /// In en, this message translates to:
-  /// **'Documentary'**
-  String get documentary;
-
-  /// No description provided for @video.
-  ///
-  /// In en, this message translates to:
-  /// **'Video'**
-  String get video;
-
-  /// No description provided for @imageGallery.
-  ///
-  /// In en, this message translates to:
-  /// **'Image & Gallery'**
-  String get imageGallery;
-
-  /// No description provided for @audioFiles.
-  ///
-  /// In en, this message translates to:
-  /// **'Audio Files'**
-  String get audioFiles;
-
-  /// No description provided for @weeklyNewspaper.
-  ///
-  /// In en, this message translates to:
-  /// **'Weekly Newspaper'**
-  String get weeklyNewspaper;
-
-  /// No description provided for @quarterlyNewspaper.
-  ///
-  /// In en, this message translates to:
-  /// **'Quarterly Newspaper'**
-  String get quarterlyNewspaper;
-
-  /// No description provided for @yearlyBook.
-  ///
-  /// In en, this message translates to:
-  /// **'Yearly Book'**
-  String get yearlyBook;
-
-  /// No description provided for @brochure.
-  ///
-  /// In en, this message translates to:
-  /// **'Brochure'**
-  String get brochure;
-
-  /// No description provided for @archive.
-  ///
-  /// In en, this message translates to:
-  /// **'Archive'**
-  String get archive;
-
-  /// No description provided for @filesAndBooks.
-  ///
-  /// In en, this message translates to:
-  /// **'Files & Books'**
-  String get filesAndBooks;
-
-  /// No description provided for @regionalSectors.
-  ///
-  /// In en, this message translates to:
-  /// **'Regional Sectors'**
-  String get regionalSectors;
-
-  /// No description provided for @zone.
-  ///
-  /// In en, this message translates to:
-  /// **'Zone'**
-  String get zone;
-
-  /// No description provided for @woreda.
-  ///
-  /// In en, this message translates to:
-  /// **'Woreda'**
-  String get woreda;
-
-  /// No description provided for @city.
-  ///
-  /// In en, this message translates to:
-  /// **'City'**
-  String get city;
-
-  /// No description provided for @subCity.
-  ///
-  /// In en, this message translates to:
-  /// **'Sub-City'**
-  String get subCity;
-
-  /// No description provided for @kebele.
-  ///
-  /// In en, this message translates to:
-  /// **'Kebele'**
-  String get kebele;
-
-  /// No description provided for @aboutUs.
-  ///
-  /// In en, this message translates to:
-  /// **'About Us'**
-  String get aboutUs;
-
-  /// No description provided for @contactUs.
-  ///
-  /// In en, this message translates to:
-  /// **'Contact Us'**
-  String get contactUs;
-
-  /// No description provided for @recentNews.
-  ///
-  /// In en, this message translates to:
-  /// **'Recent News'**
-  String get recentNews;
-
-  /// No description provided for @ourRecentNews.
-  ///
-  /// In en, this message translates to:
-  /// **'Our Recent News'**
-  String get ourRecentNews;
-
-  /// No description provided for @veryMuchRead.
-  ///
-  /// In en, this message translates to:
-  /// **'Very Much Read'**
-  String get veryMuchRead;
-
-  /// No description provided for @mostRecent.
-  ///
-  /// In en, this message translates to:
-  /// **'Most Recent'**
-  String get mostRecent;
+  /// **'Email'**
+  String get email;
 
   /// No description provided for @mostRead.
   ///
@@ -438,23 +222,23 @@ abstract class AppLocalizations {
   /// **'Most Read'**
   String get mostRead;
 
-  /// No description provided for @viewMore.
+  /// No description provided for @mostRecent.
   ///
   /// In en, this message translates to:
-  /// **'View More'**
-  String get viewMore;
+  /// **'Most Recent'**
+  String get mostRecent;
 
-  /// No description provided for @seeAll.
+  /// No description provided for @editorsPick.
   ///
   /// In en, this message translates to:
-  /// **'See All'**
-  String get seeAll;
+  /// **'Editor\'s Pick'**
+  String get editorsPick;
 
-  /// No description provided for @views.
+  /// No description provided for @viewCount.
   ///
   /// In en, this message translates to:
-  /// **'views'**
-  String get views;
+  /// **'Views'**
+  String get viewCount;
 
   /// No description provided for @share.
   ///
@@ -462,11 +246,11 @@ abstract class AppLocalizations {
   /// **'Share'**
   String get share;
 
-  /// No description provided for @save.
+  /// No description provided for @bookmark.
   ///
   /// In en, this message translates to:
-  /// **'Save'**
-  String get save;
+  /// **'Bookmark'**
+  String get bookmark;
 
   /// No description provided for @relatedNews.
   ///
@@ -474,101 +258,11 @@ abstract class AppLocalizations {
   /// **'Related News'**
   String get relatedNews;
 
-  /// No description provided for @addToCart.
+  /// No description provided for @subscribe.
   ///
   /// In en, this message translates to:
-  /// **'Add to Cart'**
-  String get addToCart;
-
-  /// No description provided for @cart.
-  ///
-  /// In en, this message translates to:
-  /// **'Cart'**
-  String get cart;
-
-  /// No description provided for @checkout.
-  ///
-  /// In en, this message translates to:
-  /// **'Checkout'**
-  String get checkout;
-
-  /// No description provided for @price.
-  ///
-  /// In en, this message translates to:
-  /// **'Price'**
-  String get price;
-
-  /// No description provided for @total.
-  ///
-  /// In en, this message translates to:
-  /// **'Total'**
-  String get total;
-
-  /// No description provided for @emptyCart.
-  ///
-  /// In en, this message translates to:
-  /// **'Your cart is empty'**
-  String get emptyCart;
-
-  /// No description provided for @emptyNews.
-  ///
-  /// In en, this message translates to:
-  /// **'No news found'**
-  String get emptyNews;
-
-  /// No description provided for @emptyTenders.
-  ///
-  /// In en, this message translates to:
-  /// **'No tenders available'**
-  String get emptyTenders;
-
-  /// No description provided for @emptyMedia.
-  ///
-  /// In en, this message translates to:
-  /// **'No media available'**
-  String get emptyMedia;
-
-  /// No description provided for @emptyPublications.
-  ///
-  /// In en, this message translates to:
-  /// **'No publications available'**
-  String get emptyPublications;
-
-  /// No description provided for @emptyProducts.
-  ///
-  /// In en, this message translates to:
-  /// **'No products available'**
-  String get emptyProducts;
-
-  /// No description provided for @loading.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading...'**
-  String get loading;
-
-  /// No description provided for @retry.
-  ///
-  /// In en, this message translates to:
-  /// **'Retry'**
-  String get retry;
-
-  /// No description provided for @somethingWentWrong.
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong'**
-  String get somethingWentWrong;
-
-  /// No description provided for @name.
-  ///
-  /// In en, this message translates to:
-  /// **'Name'**
-  String get name;
-
-  /// No description provided for @message.
-  ///
-  /// In en, this message translates to:
-  /// **'Message'**
-  String get message;
+  /// **'Subscribe'**
+  String get subscribe;
 
   /// No description provided for @send.
   ///
@@ -576,65 +270,11 @@ abstract class AppLocalizations {
   /// **'Send'**
   String get send;
 
-  /// No description provided for @deadline.
-  ///
-  /// In en, this message translates to:
-  /// **'Deadline'**
-  String get deadline;
-
-  /// No description provided for @viewDocument.
-  ///
-  /// In en, this message translates to:
-  /// **'View Document'**
-  String get viewDocument;
-
-  /// No description provided for @subscribe.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscribe'**
-  String get subscribe;
-
-  /// No description provided for @emailHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your email'**
-  String get emailHint;
-
   /// No description provided for @copyright.
   ///
   /// In en, this message translates to:
-  /// **'© 2026 Oromia Communication Bureau. All rights reserved.'**
+  /// **'© 2024 Oromia Communication Bureau. All rights reserved.'**
   String get copyright;
-
-  /// No description provided for @missionStatement.
-  ///
-  /// In en, this message translates to:
-  /// **'Effective communication for Oromia Prosperity'**
-  String get missionStatement;
-
-  /// No description provided for @address.
-  ///
-  /// In en, this message translates to:
-  /// **'Bole Dembel, Finfinnee (Addis Ababa), Ethiopia'**
-  String get address;
-
-  /// No description provided for @phone1.
-  ///
-  /// In en, this message translates to:
-  /// **'+251115541816'**
-  String get phone1;
-
-  /// No description provided for @phone2.
-  ///
-  /// In en, this message translates to:
-  /// **'+251115541801'**
-  String get phone2;
-
-  /// No description provided for @contactEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'info@oromiacommunication.gov.et'**
-  String get contactEmail;
 
   /// No description provided for @selectLanguage.
   ///

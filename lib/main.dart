@@ -1,7 +1,9 @@
+import 'models/publication_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'screens/ai/ai_chat_screen.dart';
 
 import 'package:meine_entwickler/core/theme/app_colors.dart';
 import 'package:meine_entwickler/core/theme/app_theme.dart';
@@ -10,7 +12,7 @@ import 'package:meine_entwickler/l10n/app_localizations.dart';
 import 'models/media.dart';
 import 'models/news.dart';
 import 'models/news_category.dart';
-import 'models/publication.dart';
+
 import 'providers/language_provider.dart';
 import 'screens/about/about_screen.dart';
 import 'screens/auth/forgot_password_screen.dart';
@@ -41,13 +43,22 @@ void main() {
 class OromiaApp extends ConsumerWidget {
   const OromiaApp({super.key});
 
+  /// Locales for which Flutter ships built-in MaterialLocalizations.
+  /// Flutter does NOT ship om / ti / so / aa, so for those we fall back to
+  /// English for Material/Cupertino widget labels. Our own AppLocalizations
+  /// delegate still delivers the correct strings for every supported language.
+  static const Set<String> _materialSupportedLangs = {'en', 'am'};
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(languageProvider);
 
-    // Flutter doesn't bundle Tigrigna ('ti') for Material widgets — fall back to English
-    final materialLocale =
-        locale.languageCode == 'ti' ? const Locale('en') : locale;
+    // Pick the locale we hand to MaterialApp. If Flutter has no Material
+    // translations for it, use English (avoids 'No MaterialLocalizations').
+    final effectiveLocale =
+        _materialSupportedLangs.contains(locale.languageCode)
+            ? locale
+            : const Locale('en');
 
     return MaterialApp.router(
       title: 'Oromia Communication Bureau',
@@ -61,7 +72,7 @@ class OromiaApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      locale: materialLocale,
+      locale: effectiveLocale,
       supportedLocales: const [
         Locale('en'),
         Locale('am'),
@@ -207,23 +218,23 @@ final GoRouter _router = GoRouter(
 
     // ============ KALLACHA OROMIA ============
     GoRoute(
-      path: '/kallacha/:type',
-      name: 'publicationList',
-      builder: (context, state) {
-        final slug = state.pathParameters['type'] ?? 'weekly';
-        final type = PublicationTypeExtension.fromSlug(slug);
-        return PublicationListScreen(type: type);
-      },
-    ),
+  path: '/kallacha/:type',
+  name: 'publicationList',
+  builder: (context, state) {
+    final slug = state.pathParameters['type'] ?? 'weekly';
+    final type = PublicationTypeExtension.fromSlug(slug);
+    return PublicationListScreen(type: type);
+  },
+),
     GoRoute(
-      path: '/kallacha/reader/:bookId',
-      name: 'reader',
-      builder: (context, state) {
-        final id =
-            int.tryParse(state.pathParameters['bookId'] ?? '0') ?? 0;
-        return ReaderScreen(bookId: id);
-      },
-    ),
+  path: '/kallacha/reader/:bookId',
+  name: 'reader',
+  builder: (context, state) {
+    final bookId = state.pathParameters['bookId'] ?? '';
+    final type = state.uri.queryParameters['type'] ?? 'weekly';
+    return ReaderScreen(bookId: bookId, type: type);
+  },
+),
 
     // ============ SHOP ============
     GoRoute(
@@ -262,6 +273,12 @@ final GoRouter _router = GoRouter(
       name: 'search',
       builder: (context, state) => const SearchScreen(),
     ),
+
+    GoRoute(
+  path: '/ai',
+  name: 'ai',
+  builder: (context, state) => const AiChatScreen(),
+),
 
     // ============ LANGUAGE ============
     GoRoute(
